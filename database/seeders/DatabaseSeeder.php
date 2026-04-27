@@ -22,5 +22,13 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin 123'),
             'role' => 'admin',
         ]);
+
+        // Create a Driver user
+        User::factory()->create([
+            'name' => 'John Driver',
+            'email' => 'driver@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'driver',
+        ]);
     }
 }

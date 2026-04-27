@@ -15,6 +15,7 @@ class Bus extends Model
         'capacity',
         'insurance_expiry',
         'license_expiry',
+        'photo_path',
         'current_location_lat',
         'current_location_lng',
         'is_active',
