@@ -19,7 +19,13 @@ class Bus extends Model
         'current_location_lat',
         'current_location_lng',
         'is_active',
+        'driver_id',
     ];
+
+    public function driver()
+    {
+        return $this->belongsTo(User::class, 'driver_id');
+    }
 
     protected $casts = [
         'is_active' => 'boolean',

@@ -36,6 +36,18 @@
                         <input type="date" name="insurance_expiry" value="{{ old('insurance_expiry') }}">
                     </div>
                     <div class="form-group">
+                        <label>Primary Operator (Driver)</label>
+                        <select name="driver_id">
+                            <option value="">No Driver Assigned</option>
+                            @foreach($drivers as $driver)
+                                <option value="{{ $driver->id }}" {{ old('driver_id') == $driver->id ? 'selected' : '' }}>
+                                    {{ $driver->name }} ({{ $driver->email }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('driver_id') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
                         <label>Bus Photo</label>
                         <input type="file" name="photo" accept="image/*">
                         @error('photo') <span class="error">{{ $message }}</span> @enderror

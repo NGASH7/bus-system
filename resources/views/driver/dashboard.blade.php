@@ -16,7 +16,7 @@
                         </div>
                         <div class="hero-mini-stat">
                             <span class="mini-stat-label">Assigned Bus</span>
-                            <span class="mini-stat-value">KDP 923K</span>
+                            <span class="mini-stat-value">{{ Auth::user()->bus->plate_number ?? 'Not Assigned' }}</span>
                         </div>
                     </div>
                 </div>
@@ -53,35 +53,66 @@
                             <h3 class="card-title">Assigned Vehicle Details</h3>
                         </div>
                         <div class="vehicle-detail-body">
+                            @if(Auth::user()->bus)
                             <div class="vehicle-info-main">
                                 <div class="vehicle-avatar">
                                     <i class="fas fa-bus"></i>
                                 </div>
                                 <div class="vehicle-meta">
-                                    <h4 class="v-name">KDP 923K (School Bus)</h4>
-                                    <p class="v-status"><span class="status-dot"></span> Good Condition</p>
+                                    <h4 class="v-name">{{ Auth::user()->bus->plate_number }} ({{ Auth::user()->bus->model }})</h4>
+                                    <p class="v-status"><span class="status-dot"></span> {{ Auth::user()->bus->is_active ? 'Active' : 'Maintenance' }}</p>
                                 </div>
                             </div>
                             <div class="vehicle-stats-grid">
                                 <div class="v-mini-card">
-                                    <span class="v-label">Odometer</span>
-                                    <span class="v-value">24,500 KM</span>
+                                    <span class="v-label">Seating</span>
+                                    <span class="v-value">{{ Auth::user()->bus->capacity }} Seats</span>
                                 </div>
                                 <div class="v-mini-card">
-                                    <span class="v-label">Last Service</span>
-                                    <span class="v-value">12d ago</span>
+                                    <span class="v-label">Insurance Exp.</span>
+                                    <span class="v-value">{{ Auth::user()->bus->insurance_expiry ? \Carbon\Carbon::parse(Auth::user()->bus->insurance_expiry)->format('M d, Y') : '—' }}</span>
                                 </div>
                                 <div class="v-mini-card">
-                                    <span class="v-label">Next Service</span>
-                                    <span class="v-value">18d left</span>
+                                    <span class="v-label">My License Exp.</span>
+                                    <span class="v-value">{{ Auth::user()->license_expiry ? \Carbon\Carbon::parse(Auth::user()->license_expiry)->format('M d, Y') : '—' }}</span>
                                 </div>
                             </div>
+                            @else
+                            <div class="text-center py-8">
+                                <i class="fas fa-bus-slash text-4xl text-gray-200 mb-4 block"></i>
+                                <p class="text-gray-400 font-bold">No Vehicle Assigned Yet</p>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
 
                 <!-- SIDE MODULES -->
                 <div class="dashboard-side-col">
+                    <!-- PERSONAL DOSSIER CARD -->
+                    <div class="unified-status-card mb-6">
+                        <div class="card-header-accent" style="background: var(--maroon); color: white; padding: 15px 25px;">
+                            <h3 class="status-card-title text-white" style="color: white; font-size: 13px; letter-spacing: 1px;">My Official Data</h3>
+                        </div>
+                        
+                        <div class="p-8 px-12">
+                            <div class="data-slot mb-6">
+                                <span class="row-label mb-2 block" style="font-size: 9px; opacity: 0.6;">Full Name</span>
+                                <div class="font-black text-lg text-gray-900 leading-tight uppercase" style="font-family: 'Outfit', sans-serif;">{{ Auth::user()->name }}</div>
+                            </div>
+                            
+                            <div class="data-slot mb-6">
+                                <span class="row-label mb-2 block" style="font-size: 9px; opacity: 0.6;">Phone Number</span>
+                                <div class="font-black text-md text-gray-800 tracking-tight">{{ Auth::user()->phone_number ?? 'Not Provided' }}</div>
+                            </div>
+
+                            <div class="data-slot last:mb-0">
+                                <span class="row-label mb-2 block" style="font-size: 9px; opacity: 0.6;">National ID Number</span>
+                                <div class="font-black text-xl text-gray-900 tracking-tighter" style="font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">{{ Auth::user()->national_id ?? 'Not Provided' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="unified-status-card">
                         <div class="card-header-accent">
                             <h3 class="status-card-title">Compliance & Status</h3>
@@ -95,8 +126,10 @@
                             <div class="row-info">
                                 <span class="row-label">License Status</span>
                                 <div class="row-flex">
-                                    <span class="row-value text-success">Valid</span>
-                                    <span class="row-meta">Exp: Dec 2027</span>
+                                    <span class="row-value {{ Auth::user()->license_expiry && \Carbon\Carbon::parse(Auth::user()->license_expiry)->isPast() ? 'text-red' : 'text-success' }}">
+                                        {{ Auth::user()->license_expiry && \Carbon\Carbon::parse(Auth::user()->license_expiry)->isPast() ? 'Expired' : 'Valid' }}
+                                    </span>
+                                    <span class="row-meta">Exp: {{ Auth::user()->license_expiry ? \Carbon\Carbon::parse(Auth::user()->license_expiry)->format('M Y') : '—' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -107,10 +140,9 @@
                                 <i class="fas fa-shield-alt"></i>
                             </div>
                             <div class="row-info">
-                                <span class="row-label">Vehicle Insurance</span>
+                                <span class="row-label">License No.</span>
                                 <div class="row-flex">
-                                    <span class="row-value">Comprehensive</span>
-                                    <span class="row-meta">Next: Aug 2026</span>
+                                    <span class="row-value">{{ Auth::user()->license_number ?? 'Pending' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -121,10 +153,9 @@
                                 <i class="fas fa-tools"></i>
                             </div>
                             <div class="row-info">
-                                <span class="row-label">Maintenance</span>
+                                <span class="row-label">Vehicle Docs</span>
                                 <div class="row-flex">
-                                    <span class="row-value">Scheduled</span>
-                                    <span class="row-meta">18 Days Left</span>
+                                    <span class="row-value">{{ Auth::user()->bus ? 'Insured' : 'No Bus' }}</span>
                                 </div>
                             </div>
                         </div>

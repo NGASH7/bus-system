@@ -32,8 +32,8 @@
                 <!-- Receipts Card -->
                 <div class="admin-stat-card">
                     <div class="sc-icon-circle"><i class="fas fa-receipt"></i></div>
-                    <div class="sc-number">18</div>
-                    <div class="sc-label">NEW RECEIPTS</div>
+                    <div class="sc-number">{{ $stats['receipts'] }}</div>
+                    <div class="sc-label">TOTAL RECEIPTS</div>
                 </div>
             </div>
 

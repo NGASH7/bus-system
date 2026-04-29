@@ -21,7 +21,7 @@
                         <th>Plate Number</th>
                         <th>Model</th>
                         <th>Capacity</th>
-                        <th>Insurance Expiry</th>
+                        <th>Assigned Driver</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -34,12 +34,13 @@
                             <td>{{ $bus->model }}</td>
                             <td>{{ $bus->capacity }} seats</td>
                             <td>
-                                @if($bus->insurance_expiry)
-                                    <span class="{{ \Carbon\Carbon::parse($bus->insurance_expiry)->isPast() ? 'text-red' : 'text-green' }}">
-                                        {{ \Carbon\Carbon::parse($bus->insurance_expiry)->format('M d, Y') }}
-                                    </span>
+                                @if($bus->driver)
+                                    <div style="display:flex; flex-direction:column;">
+                                        <span style="font-weight:700; color:#111827;">{{ $bus->driver->name }}</span>
+                                        <span style="font-size:11px; color:#6b7280;">{{ $bus->driver->email }}</span>
+                                    </div>
                                 @else
-                                    <span class="text-muted">—</span>
+                                    <span style="color:#9ca3af; font-style:italic;">Unassigned</span>
                                 @endif
                             </td>
                             <td>

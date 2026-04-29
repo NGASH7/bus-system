@@ -23,7 +23,17 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'must_change_password',
+        'phone_number',
+        'license_number',
+        'license_expiry',
+        'national_id',
     ];
+
+    public function bus()
+    {
+        return $this->hasOne(Bus::class, 'driver_id');
+    }
 
     /**
      * Check if the user is an admin.
@@ -61,6 +71,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'must_change_password' => 'boolean',
+            'license_expiry' => 'date',
         ];
     }
 }

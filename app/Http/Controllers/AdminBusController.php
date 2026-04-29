@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bus;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -10,13 +11,14 @@ class AdminBusController extends Controller
 {
     public function index()
     {
-        $buses = Bus::latest()->get();
+        $buses = Bus::with('driver')->latest()->get();
         return view('admin.buses.index', compact('buses'));
     }
 
     public function create()
     {
-        return view('admin.buses.create');
+        $drivers = User::where('role', 'driver')->get();
+        return view('admin.buses.create', compact('drivers'));
     }
 
     public function store(Request $request)
@@ -27,6 +29,7 @@ class AdminBusController extends Controller
             'capacity' => 'required|integer|min:1',
             'insurance_expiry' => 'nullable|date',
             'license_expiry' => 'nullable|date',
+            'driver_id' => 'nullable|exists:users,id',
             'photo' => 'nullable|image|max:5120',
         ]);
 
@@ -41,7 +44,8 @@ class AdminBusController extends Controller
 
     public function edit(Bus $bus)
     {
-        return view('admin.buses.edit', compact('bus'));
+        $drivers = User::where('role', 'driver')->get();
+        return view('admin.buses.edit', compact('bus', 'drivers'));
     }
 
     public function show(Bus $bus)
@@ -57,6 +61,7 @@ class AdminBusController extends Controller
             'capacity' => 'required|integer|min:1',
             'insurance_expiry' => 'nullable|date',
             'license_expiry' => 'nullable|date',
+            'driver_id' => 'nullable|exists:users,id',
             'photo' => 'nullable|image|max:5120',
         ]);
 

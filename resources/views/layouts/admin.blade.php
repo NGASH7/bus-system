@@ -285,7 +285,8 @@
                 <a href="#" class="nav-item">
                     <i class="fas fa-file-invoice-dollar"></i> Billing
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('admin.receipts.index') }}"
+                    class="nav-item {{ request()->routeIs('admin.receipts.*') ? 'active' : '' }}">
                     <i class="fas fa-receipt"></i> Receipts
                 </a>
                 <a href="#" class="nav-item">

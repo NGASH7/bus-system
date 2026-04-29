@@ -12,11 +12,23 @@ class Booking extends Model
     protected $fillable = [
         'user_id',
         'bus_id',
+        'service_type',
         'pickup_location',
         'destination',
         'date',
-        'amount',
+        'pickup_time',
+        'return_date',
+        'return_time',
+        'offered_price',
+        'counter_price',
+        'status',
+        'details',
         'payment_status',
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+        'return_date' => 'date',
     ];
 
     public function user()

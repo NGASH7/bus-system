@@ -21,20 +21,28 @@ class AdminDriverController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
+            'phone_number' => 'nullable|string|max:20',
+            'license_number' => 'nullable|string|max:50',
+            'license_expiry' => 'nullable|date',
+            'national_id' => 'nullable|string|max:50',
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+        User::create(array_merge($validated, [
+            'password' => Hash::make('driver123'),
             'role' => 'driver',
-        ]);
+            'must_change_password' => true,
+        ]));
 
         return redirect()->route('admin.drivers.index')->with('success', 'Driver added successfully.');
+    }
+
+    public function show(User $driver)
+    {
+        $driver->load('bus');
+        return view('admin.drivers.show', compact('driver'));
     }
 
     public function edit(User $driver)
@@ -44,21 +52,26 @@ class AdminDriverController extends Controller
 
     public function update(Request $request, User $driver)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $driver->id,
+            'phone_number' => 'nullable|string|max:20',
+            'license_number' => 'nullable|string|max:50',
+            'license_expiry' => 'nullable|date',
+            'national_id' => 'nullable|string|max:50',
         ]);
 
-        $driver->update([
-            'name' => $request->name,
-            'email' => $request->email,
-        ]);
+        $data = $validated;
 
-        if ($request->filled('password')) {
-            $driver->update(['password' => Hash::make($request->password)]);
+        // Emergency Password Reset to default
+        if ($request->has('reset_password')) {
+            $data['password'] = Hash::make('driver123');
+            $data['must_change_password'] = true;
         }
 
-        return redirect()->route('admin.drivers.index')->with('success', 'Driver updated successfully.');
+        $driver->update($data);
+
+        return redirect()->route('admin.drivers.index')->with('success', 'Driver profile updated successfully.');
     }
 
     public function destroy(User $driver)
