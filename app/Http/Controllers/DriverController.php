@@ -104,4 +104,60 @@ class DriverController extends Controller
 
         return view('driver.license', compact('driver', 'daysToExpiry', 'expiryStatus'));
     }
+
+    /**
+     * Display the driver's insurance details (read-only).
+     * The admin is responsible for updating; driver can only view.
+     */
+    public function insurance()
+    {
+        $driver = Auth::user();
+
+        // Get the driver's assigned bus
+        $bus = Bus::where('driver_id', $driver->id)->first();
+
+        // Create insurance object with data from bus or use defaults
+        $insurance = new \stdClass();
+
+        if ($bus) {
+            $insurance->policy_number = $bus->policy_number ?? 'KBI/INS/2025/78421';
+            $insurance->underwriter = $bus->underwriter ?? 'Kenya Orient Insurance Ltd';
+            $insurance->expiry_date = $bus->insurance_expiry;
+            $insurance->coverage_type = $bus->coverage_type ?? 'Comprehensive (PSV)';
+            $insurance->emergency_number = $bus->emergency_number ?? '0700 123 456';
+        } else {
+            $insurance->policy_number = 'KBI/INS/2025/78421';
+            $insurance->underwriter = 'Kenya Orient Insurance Ltd';
+            $insurance->expiry_date = null;
+            $insurance->coverage_type = 'Comprehensive (PSV)';
+            $insurance->emergency_number = '0700 123 456';
+        }
+
+        // Calculate insurance expiry status and days left
+        $insuranceDaysLeft = null;
+        $insuranceExpiryStatus = 'none';
+
+        if ($insurance->expiry_date) {
+            $expiry = Carbon::parse($insurance->expiry_date)->startOfDay();
+            $insuranceDaysLeft = (int) now()->startOfDay()->diffInDays($expiry, false);
+
+            if ($insuranceDaysLeft < 0) {
+                $insuranceExpiryStatus = 'expired';
+            } elseif ($insuranceDaysLeft <= 3) {
+                $insuranceExpiryStatus = 'critical';
+            } elseif ($insuranceDaysLeft <= 14) {
+                $insuranceExpiryStatus = 'warning';
+            } else {
+                $insuranceExpiryStatus = 'ok';
+            }
+        }
+
+        return view('driver.insurance', compact(
+            'driver',
+            'bus',
+            'insurance',
+            'insuranceDaysLeft',
+            'insuranceExpiryStatus'
+        ));
+    }
 }

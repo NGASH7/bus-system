@@ -16,13 +16,13 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     $bookingsQuery = \App\Models\Booking::where('user_id', \Illuminate\Support\Facades\Auth::id());
-    
+
     $totalBookings = clone $bookingsQuery;
     $totalBookingsCount = $totalBookings->count();
-    
+
     $activeTrips = clone $bookingsQuery;
     $activeTripsCount = $activeTrips->whereIn('status', ['accepted', 'pending', 'countered'])->count();
-    
+
     $recentBookings = $bookingsQuery->latest()->take(3)->get();
 
     return view('dashboard', compact('totalBookingsCount', 'activeTripsCount', 'recentBookings'));
@@ -91,8 +91,8 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
         Route::get('/driver/schedule', [DriverController::class, 'schedule'])->name('driver.schedule');
         Route::get('/driver/history', [DriverController::class, 'history'])->name('driver.history');
         Route::get('/driver/license', [DriverController::class, 'license'])->name('driver.license');
+        Route::get('/driver/insurance', [DriverController::class, 'insurance'])->name('driver.insurance');
     });
 });
 
 require __DIR__ . '/auth.php';
-

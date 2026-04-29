@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,7 +11,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Scripts -->
@@ -85,7 +88,8 @@
             margin-right: 12px;
         }
 
-        .nav-item:hover, .nav-item.active {
+        .nav-item:hover,
+        .nav-item.active {
             background: rgba(255, 255, 255, 0.05);
             color: white;
         }
@@ -201,6 +205,7 @@
         }
     </style>
 </head>
+
 <body class="font-sans antialiased text-gray-900">
     <div class="driver-container">
         <aside class="sidebar">
@@ -210,22 +215,26 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="{{ route('driver.dashboard') }}" class="nav-item {{ request()->routeIs('driver.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('driver.dashboard') }}"
+                    class="nav-item {{ request()->routeIs('driver.dashboard') ? 'active' : '' }}">
                     <i class="fas fa-th-large"></i> Dashboard
                 </a>
-                <a href="{{ route('driver.schedule') }}" class="nav-item {{ request()->routeIs('driver.schedule') ? 'active' : '' }}">
+                <a href="{{ route('driver.schedule') }}"
+                    class="nav-item {{ request()->routeIs('driver.schedule') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i> My Schedule
                 </a>
-                <a href="{{ route('driver.license') }}" class="nav-item {{ request()->routeIs('driver.license') ? 'active' : '' }}">
+                <a href="{{ route('driver.license') }}"
+                    class="nav-item {{ request()->routeIs('driver.license') ? 'active' : '' }}">
                     <i class="fas fa-id-card"></i> My License
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('driver.insurance') }}" class="nav-item">
                     <i class="fas fa-shield-alt"></i> Insurance
                 </a>
                 <a href="#" class="nav-item">
                     <i class="fas fa-screwdriver-wrench"></i> Bus Service
                 </a>
-                <a href="{{ route('driver.history') }}" class="nav-item {{ request()->routeIs('driver.history') ? 'active' : '' }}">
+                <a href="{{ route('driver.history') }}"
+                    class="nav-item {{ request()->routeIs('driver.history') ? 'active' : '' }}">
                     <i class="fas fa-history"></i> Trip History
                 </a>
                 <a href="#" class="nav-item">
@@ -259,7 +268,8 @@
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <a href="{{ route('logout') }}" class="header-btn" onclick="event.preventDefault(); this.closest('form').submit();">
+                        <a href="{{ route('logout') }}" class="header-btn"
+                            onclick="event.preventDefault(); this.closest('form').submit();">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </a>
                     </form>
@@ -272,4 +282,5 @@
         </div>
     </div>
 </body>
+
 </html>
