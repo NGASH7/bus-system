@@ -1,62 +1,104 @@
 <x-admin-layout>
-    <div class="fade-up">
-        <h1 style="font-family:'Outfit',sans-serif; font-size: 28px; font-weight: 800; color: #1f2937; margin-bottom: 24px;">Dashboard</h1>
+    <div class="admin-dashboard-wrapper fade-up">
+        <div class="max-w-[1440px] mx-auto">
+            
+            <!-- MINIMAL HEADER -->
+            <div class="welcome-header-minimal mb-8">
+                <h1 class="page-title">Admin Dashboard</h1>
+            </div>
 
-        <!-- STAT CARDS -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-bus"></i></div>
-                <div class="stat-value">11</div>
-                <div class="stat-label">Buses: Active Fleet</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-id-card"></i></div>
-                <div class="stat-value">9</div>
-                <div class="stat-label">Drivers: On Duty</div>
-            </div>
-            <div class="stat-card urgent">
-                <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-                <div class="stat-value">6</div>
-                <div class="stat-label">Billing: Pending Items</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-receipt"></i></div>
-                <div class="stat-value">18</div>
-                <div class="stat-label">Receipts: New Records</div>
-            </div>
-        </div>
-
-        <!-- WELCOME BOX -->
-        <div class="welcome-section shadow-sm">
-            <div class="welcome-header">
-                <i class="fas fa-shield-halved"></i>
-                Welcome to Admin Panel
-            </div>
-            <div class="welcome-body">
-                <p>Hello <strong>{{ Auth::user()->name }}</strong>, you are currently managing the Mwigito Excel Bus System.</p>
-                <div class="alert-info">
-                   <i class="fas fa-info-circle"></i> Use the sidebar navigation on the left to manage fleet, staff, and system contents.
+            <div class="stats-row">
+                <!-- Fleet Card -->
+                <div class="admin-stat-card">
+                    <div class="sc-icon-circle"><i class="fas fa-bus"></i></div>
+                    <div class="sc-number">{{ $stats['buses'] }}</div>
+                    <div class="sc-label">ACTIVE FLEET</div>
                 </div>
-                
-                <div class="quick-links mt-6 pt-6 border-t border-gray-100">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-3">System Shortcuts</span>
-                    <div class="flex gap-3">
-                         <a href="#" class="btn-sm"><i class="fas fa-bus"></i> Fleet Status</a>
-                         <a href="#" class="btn-sm"><i class="fas fa-id-card"></i> Driver Records</a>
-                         <a href="#" class="btn-sm"><i class="fas fa-receipt"></i> Receipts</a>
-                         <a href="#" class="btn-sm"><i class="fas fa-calendar-alt"></i> Trip History</a>
+
+                <!-- Drivers Card -->
+                <div class="admin-stat-card">
+                    <div class="sc-icon-circle"><i class="fas fa-id-card"></i></div>
+                    <div class="sc-number">{{ $stats['drivers'] }}</div>
+                    <div class="sc-label">TOTAL DRIVERS</div>
+                </div>
+
+                <!-- Billing Card -->
+                <div class="admin-stat-card">
+                    <div class="sc-icon-circle danger-tint"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <div class="sc-number danger-text">{{ $stats['billings'] }}</div>
+                    <div class="sc-label">PENDING BILLING</div>
+                </div>
+
+                <!-- Receipts Card -->
+                <div class="admin-stat-card">
+                    <div class="sc-icon-circle"><i class="fas fa-receipt"></i></div>
+                    <div class="sc-number">18</div>
+                    <div class="sc-label">NEW RECEIPTS</div>
+                </div>
+            </div>
+
+            <!-- RECENT SYSTEM ACTIVITIES -->
+            <div class="activity-section fade-up" style="animation-delay: 0.2s;">
+                <div class="section-header-compact mb-6">
+                    <h3 class="section-title-premium"><i class="fas fa-history mr-2"></i> System Activity Log</h3>
+                    <a href="#" class="view-all-link">View Everything</a>
+                </div>
+
+                <div class="activity-container">
+                    <!-- Activity Item 1 -->
+                    <div class="activity-row">
+                        <div class="activity-marker odometer-accent">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-top">
+                                <span class="activity-user">Driver John Doe</span>
+                                <span class="activity-time">14 mins ago</span>
+                            </div>
+                            <p class="activity-msg">Clocked new odometer reading <strong>24,500 KM</strong> for Bus <strong>KDP 923K</strong></p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="quick-links mt-4">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-3">Sidebar Icon Guide</span>
-                    <div class="icon-guide-grid">
-                        <div class="icon-guide-item"><i class="fas fa-th-large"></i> Dashboard</div>
-                        <div class="icon-guide-item"><i class="fas fa-bus"></i> Buses</div>
-                        <div class="icon-guide-item"><i class="fas fa-id-card"></i> Drivers</div>
-                        <div class="icon-guide-item"><i class="fas fa-file-invoice-dollar"></i> Billing</div>
-                        <div class="icon-guide-item"><i class="fas fa-receipt"></i> Receipts</div>
-                        <div class="icon-guide-item"><i class="fas fa-cog"></i> Settings</div>
+                    <!-- Activity Item 2 -->
+                    <div class="activity-row">
+                        <div class="activity-marker billing-accent">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-top">
+                                <span class="activity-user">System Automated</span>
+                                <span class="activity-time">2 hours ago</span>
+                            </div>
+                            <p class="activity-msg">Generated monthly billing record for <strong>Mwigito School Route A</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- Activity Item 3 -->
+                    <div class="activity-row">
+                        <div class="activity-marker driver-accent">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-top">
+                                <span class="activity-user">Admin Sarah</span>
+                                <span class="activity-time">5 hours ago</span>
+                            </div>
+                            <p class="activity-msg">Verified new driver documentation for <strong>Michael Kanyingi</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- Activity Item 4 -->
+                    <div class="activity-row last-row">
+                        <div class="activity-marker service-accent">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-top">
+                                <span class="activity-user">Fleet Manager</span>
+                                <span class="activity-time">Yesterday</span>
+                            </div>
+                            <p class="activity-msg">Maintenance scheduled for <strong>Bus KDP 112L</strong> (Engine Diagnostic)</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -64,173 +106,216 @@
     </div>
 
     <style>
-        .stats-grid {
+        :root {
+            --maroon: #800000;
+            --maroon-dark: #600000;
+            --gold: #c9a84c;
+            --text-main: #1a202c;
+            --text-muted: #718096;
+            --bg-body: #f8fafc;
+            --success: #16a34a;
+        }
+
+        .admin-dashboard-wrapper {
+            padding: 0 10px 10px 10px;
+        }
+
+        /* MINIMAL HEADER */
+        .welcome-header-minimal {
+            padding-bottom: 8px;
+            border-bottom: 2px solid #edf2f7;
+        }
+
+        .page-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 850;
+            color: var(--text-main);
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        /* STATS GRID - COMPACT 4 IN A ROW */
+        .stats-row {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 14px;
-            margin-bottom: 32px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px; /* Reduced gap between cards */
         }
 
-        .stat-card {
+        @media (max-width: 1024px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .stats-row { grid-template-columns: 1fr; }
+        }
+
+        /* ADMIN STAT CARD - ULTRA RECTANGULAR COMPACT THEME */
+        .admin-stat-card {
             background: white;
-            padding: 20px 14px;
-            border-radius: 12px;
+            padding: 14px 15px; /* Further reduced vertical padding */
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            border: 1px solid #e5e7eb;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-color: var(--maroon);
+        .admin-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(128, 0, 0, 0.08);
         }
 
-        .stat-icon {
-            font-size: 14px;
-            color: var(--maroon);
-            margin-bottom: 10px;
-            height: 30px;
-            width: 30px;
+        .sc-icon-circle {
+            width: 38px;
+            height: 38px;
             background: rgba(128, 0, 0, 0.05);
+            color: var(--maroon);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-left: auto;
-            margin-right: auto;
+            font-size: 15px;
+            margin-bottom: 12px; /* Reduced internal margin */
         }
 
-        .stat-value {
+        .sc-number {
             font-family: 'Outfit', sans-serif;
-            font-size: 30px;
-            font-weight: 800;
+            font-size: 34px;
+            font-weight: 850;
             color: var(--maroon);
             line-height: 1;
-            margin-bottom: 6px;
+            margin-bottom: 4px; /* Reduced internal margin */
         }
 
-        .stat-label {
-            font-size: 10px;
-            color: #6b7280;
-            font-weight: 500;
+        .sc-label {
+            font-size: 10px; /* Smaller label */
+            font-weight: 800;
+            color: var(--text-muted);
+            letter-spacing: 1px;
             text-transform: uppercase;
-            letter-spacing: 0.2px;
         }
 
-        @media (max-width: 1200px) {
-            .stats-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
+        /* RECENT ACTIVITIES SECTION */
+        .activity-section {
+            margin-top: 50px;
         }
 
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
+        .section-header-compact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 12px;
         }
 
-        .stat-card.urgent .stat-icon {
-            background: #fff5f5;
-            color: #e53e3e;
-        }
-        .stat-card.urgent .stat-value {
-            color: #e53e3e;
-        }
-
-        /* WELCOME SECTION */
-        .welcome-section {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
+        .section-title-premium {
+            font-size: 19px;
+            font-weight: 850;
+            color: var(--text-main);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .welcome-header {
-            background: #fafafa;
-            padding: 20px 32px;
-            border-bottom: 1px solid #f0f0f0;
+        .view-all-link {
+            font-size: 12px;
             font-weight: 700;
             color: var(--maroon);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .welcome-body {
-            padding: 32px;
-        }
-
-        .welcome-body p {
-            font-size: 16px;
-            color: #374151;
-            margin-bottom: 16px;
-        }
-
-        .alert-info {
-            background: #eff6ff;
-            color: #1e40af;
-            padding: 14px 20px;
-            border-radius: 10px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-sm {
-            padding: 8px 16px;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #4b5563;
             text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+
+        .view-all-link:hover { color: var(--gold); }
+
+        .activity-container {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #f1f5f9;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .activity-row {
+            padding: 20px 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            border-bottom: 1px solid #f8fafc;
+            transition: background 0.2s;
+        }
+
+        .activity-row:hover { background: #fcfcfc; }
+        .activity-row.last-row { border-bottom: none; }
+
+        .activity-marker {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
         }
 
-        .btn-sm:hover {
-            border-color: var(--maroon);
-            color: var(--maroon);
-            background: #fffafa;
-        }
+        /* Activity Accents */
+        .odometer-accent { background: rgba(128, 0, 0, 0.05); color: var(--maroon); }
+        .billing-accent { background: rgba(201, 168, 76, 0.05); color: var(--gold); }
+        .driver-accent { background: rgba(31, 41, 55, 0.05); color: var(--text-main); }
+        .service-accent { background: rgba(22, 163, 74, 0.05); color: #16a34a; }
 
-        .icon-guide-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 10px;
-        }
+        .activity-content { flex: 1; }
 
-        .icon-guide-item {
+        .activity-top {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 8px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .activity-user {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .activity-time {
             font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .activity-msg {
+            font-size: 14px;
             color: #4b5563;
-            background: #fafafa;
+            margin: 0;
+            line-height: 1.4;
         }
 
-        .icon-guide-item i {
-            color: var(--maroon);
-            width: 12px;
-            font-size: 12px;
-            text-align: center;
+        .activity-msg strong { color: var(--text-main); font-weight: 700; }
+
+        /* SPECIAL STATES */
+        .sc-icon-circle.danger-tint {
+            background: rgba(220, 38, 38, 0.05);
+            color: #dc2626;
+        }
+        .sc-number.danger-text {
+            color: #dc2626;
+        }
+
+        .fade-up {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-up {
-            animation: fadeUp 0.5s ease-out forwards;
         }
     </style>
 </x-admin-layout>

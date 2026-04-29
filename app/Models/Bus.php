@@ -20,4 +20,10 @@ class Bus extends Model
         'current_location_lng',
         'is_active',
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'insurance_expiry' => 'date',
+        'license_expiry' => 'date',
+    ];
 }
