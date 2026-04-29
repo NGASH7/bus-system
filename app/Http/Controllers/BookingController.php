@@ -45,8 +45,43 @@ class BookingController extends Controller
         $booking = Booking::create(array_merge($validated, [
             'user_id' => Auth::id(),
             'status' => 'pending',
+            'amount' => $validated['offered_price'],
         ]));
 
         return redirect()->route('dashboard')->with('success', 'Your booking request has been submitted. The admin will review your offer shortly.');
+    }
+
+    /**
+     * Display a listing of the user's bookings.
+     */
+    public function index()
+    {
+        $bookings = Booking::with('bus')
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+            
+        return view('bookings.index', compact('bookings'));
+    }
+
+    /**
+     * Accept a counter-offer from the admin.
+     */
+    public function acceptCounter(Booking $booking)
+    {
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($booking->status !== 'countered') {
+            return back()->with('error', 'This booking does not have an active counter-offer.');
+        }
+
+        $booking->update([
+            'status' => 'accepted',
+            'offered_price' => $booking->counter_price // Formalize the new price
+        ]);
+
+        return back()->with('success', 'You have accepted the counter-offer. Your booking is now confirmed!');
     }
 }

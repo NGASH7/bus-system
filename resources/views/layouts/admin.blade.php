@@ -279,7 +279,10 @@
                 <a href="#" class="nav-item">
                     <i class="fas fa-shield-alt"></i> Insurance
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('admin.schedule.index') }}" class="nav-item {{ request()->routeIs('admin.schedule.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i> Schedule
+                </a>
+                <a href="{{ route('admin.bookings.index') }}" class="nav-item {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}">
                     <i class="fas fa-ticket-alt"></i> Bookings
                 </a>
                 <a href="#" class="nav-item">

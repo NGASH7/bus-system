@@ -21,6 +21,7 @@ class Booking extends Model
         'return_time',
         'offered_price',
         'counter_price',
+        'amount',
         'status',
         'details',
         'payment_status',

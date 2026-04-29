@@ -11,7 +11,7 @@
                         <p class="hero-subtitle">Ready for your next journey with Mwigito Excel? Your current status is active.</p>
                         
                         <div class="hero-actions">
-                            <a href="#" class="btn-hero-primary">
+                            <a href="{{ route('bookings.create') }}" class="btn-hero-primary">
                                 <i class="fas fa-bus"></i> Book A Bus
                             </a>
                             <a href="#" class="btn-hero-secondary">

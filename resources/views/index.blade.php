@@ -1274,7 +1274,7 @@
                     <li><i class="fas fa-check-circle purple"></i> Get instant price quote</li>
                     <li><i class="fas fa-check-circle purple"></i> Book driver and bus</li>
                 </ul>
-                <a href="#quick-actions" class="btn-service purple" style="width: 100%; justify-content: center;">Rent a
+                <a href="{{ route('bookings.create') }}" class="btn-service purple" style="width: 100%; justify-content: center;">Rent a
                     bus <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
