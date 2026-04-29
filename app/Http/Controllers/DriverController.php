@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bus;
 use App\Models\Booking;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,8 +16,6 @@ class DriverController extends Controller
     public function index()
     {
         $driver = Auth::user();
-
-        // Find the bus assigned to this driver
         $assignedBus = Bus::where('driver_id', $driver->id)->first();
 
         $mySchedule = collect();
@@ -75,5 +74,34 @@ class DriverController extends Controller
         }
 
         return view('driver.history', compact('assignedBus', 'tripHistory'));
+    }
+
+    /**
+     * Display the driver's license details (read-only).
+     * The admin is responsible for updating; driver can only view.
+     */
+    public function license()
+    {
+        $driver = Auth::user();
+
+        $daysToExpiry = null;
+        $expiryStatus = 'none'; // none | ok | warning | critical | expired
+
+        if ($driver->license_expiry) {
+            $expiry = Carbon::parse($driver->license_expiry)->startOfDay();
+            $daysToExpiry = (int) now()->startOfDay()->diffInDays($expiry, false);
+
+            if ($daysToExpiry < 0) {
+                $expiryStatus = 'expired';
+            } elseif ($daysToExpiry <= 14) {
+                $expiryStatus = 'critical';
+            } elseif ($daysToExpiry <= 60) {
+                $expiryStatus = 'warning';
+            } else {
+                $expiryStatus = 'ok';
+            }
+        }
+
+        return view('driver.license', compact('driver', 'daysToExpiry', 'expiryStatus'));
     }
 }

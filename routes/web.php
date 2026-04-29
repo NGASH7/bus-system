@@ -90,6 +90,7 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
         Route::get('/driver/dashboard', [DriverController::class, 'index'])->name('driver.dashboard');
         Route::get('/driver/schedule', [DriverController::class, 'schedule'])->name('driver.schedule');
         Route::get('/driver/history', [DriverController::class, 'history'])->name('driver.history');
+        Route::get('/driver/license', [DriverController::class, 'license'])->name('driver.license');
     });
 });
 

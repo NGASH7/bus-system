@@ -119,6 +119,22 @@
                                     <p class="action-note text-green-dark">Your trip is locked in the master schedule. You have secured the vehicle for this journey.</p>
                                 </div>
                             </div>
+                            @if($booking->bus && $booking->bus->driver)
+                            <div class="driver-contact-pill">
+                                <div class="driver-avatar-sm">{{ strtoupper(substr($booking->bus->driver->name, 0, 1)) }}</div>
+                                <div class="driver-info">
+                                    <span class="driver-lbl">Your Driver</span>
+                                    <strong class="driver-name">{{ $booking->bus->driver->name }}</strong>
+                                    @if($booking->bus->driver->phone_number)
+                                    <a href="tel:{{ $booking->bus->driver->phone_number }}" class="driver-phone">
+                                        <i class="fas fa-phone-alt"></i> {{ $booking->bus->driver->phone_number }}
+                                    </a>
+                                    @else
+                                    <span class="driver-phone" style="opacity:0.5;">Phone not provided</span>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
                             @elseif($booking->status === 'rejected')
                             <div class="action-footer bg-danger">
                                 <div class="action-icon-large text-red"><i class="fas fa-ban"></i></div>
@@ -553,6 +569,67 @@
         .bg-success { background: #f0fdf4; border: 1px solid #bbf7d0; }
         .text-green { color: #15803d; }
         .text-green-dark { color: #166534; }
+
+        /* DRIVER CONTACT PILL */
+        .driver-contact-pill {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 12px;
+            padding: 14px 18px;
+            background: white;
+            border: 1.5px solid #a7f3d0;
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.06);
+        }
+
+        .driver-avatar-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #111827;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .driver-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .driver-lbl {
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #9ca3af;
+        }
+
+        .driver-name {
+            font-size: 14px;
+            font-weight: 900;
+            color: #111827;
+        }
+
+        .driver-phone {
+            font-size: 13px;
+            font-weight: 700;
+            color: #047857;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .driver-phone:hover {
+            text-decoration: underline;
+        }
 
         .bg-danger { background: #fef2f2; border: 1px solid #fecaca; }
         .text-red { color: #b91c1c; }

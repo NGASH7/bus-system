@@ -216,7 +216,7 @@
                 <a href="{{ route('driver.schedule') }}" class="nav-item {{ request()->routeIs('driver.schedule') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i> My Schedule
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('driver.license') }}" class="nav-item {{ request()->routeIs('driver.license') ? 'active' : '' }}">
                     <i class="fas fa-id-card"></i> My License
                 </a>
                 <a href="#" class="nav-item">

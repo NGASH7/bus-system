@@ -56,7 +56,7 @@ class BookingController extends Controller
      */
     public function index()
     {
-        $bookings = Booking::with('bus')
+        $bookings = Booking::with('bus.driver')
             ->where('user_id', Auth::id())
             ->latest()
             ->get();
