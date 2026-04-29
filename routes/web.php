@@ -15,7 +15,17 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $bookingsQuery = \App\Models\Booking::where('user_id', \Illuminate\Support\Facades\Auth::id());
+    
+    $totalBookings = clone $bookingsQuery;
+    $totalBookingsCount = $totalBookings->count();
+    
+    $activeTrips = clone $bookingsQuery;
+    $activeTripsCount = $activeTrips->whereIn('status', ['accepted', 'pending', 'countered'])->count();
+    
+    $recentBookings = $bookingsQuery->latest()->take(3)->get();
+
+    return view('dashboard', compact('totalBookingsCount', 'activeTripsCount', 'recentBookings'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'force.password.change'])->group(function () {
@@ -78,6 +88,8 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
     // Driver Routes
     Route::middleware('role:driver')->group(function () {
         Route::get('/driver/dashboard', [DriverController::class, 'index'])->name('driver.dashboard');
+        Route::get('/driver/schedule', [DriverController::class, 'schedule'])->name('driver.schedule');
+        Route::get('/driver/history', [DriverController::class, 'history'])->name('driver.history');
     });
 });
 

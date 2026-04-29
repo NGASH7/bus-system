@@ -32,7 +32,7 @@
                             </div>
                             <div class="stat-info">
                                 <div class="stat-label">Active Trips</div>
-                                <div class="stat-value">0</div>
+                                <div class="stat-value">{{ $activeTripsCount }}</div>
                             </div>
                         </div>
 
@@ -42,7 +42,7 @@
                             </div>
                             <div class="stat-info">
                                 <div class="stat-label">Total Bookings</div>
-                                <div class="stat-value">0</div>
+                                <div class="stat-value">{{ $totalBookingsCount }}</div>
                             </div>
                         </div>
                     </div>
@@ -50,15 +50,39 @@
                     <div class="content-white-card mt-8">
                         <div class="card-header">
                             <h3 class="card-title">Recent Bookings</h3>
-                            <a href="#" class="card-link">View All History</a>
+                            <a href="{{ route('bookings.index') }}" class="card-link">View All History</a>
                         </div>
+                        @if($recentBookings->isEmpty())
                         <div class="empty-state-wrap">
                             <div class="empty-icon">
                                 <i class="fas fa-calendar-times"></i>
                             </div>
                             <p class="empty-text">You haven't made any bookings yet. Your future travels will appear here.</p>
-                            <button class="btn-empty-action">Start Planning Now</button>
+                            <a href="{{ route('bookings.create') }}" class="btn-empty-action" style="text-decoration: none; display: inline-block;">Start Planning Now</a>
                         </div>
+                        @else
+                        <div class="recent-bookings-list" style="margin-top: 15px;">
+                            @foreach($recentBookings as $booking)
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f3f4f6;">
+                                <div style="display: flex; gap: 15px; align-items: center;">
+                                    <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(128, 0, 0, 0.05); color: var(--maroon); display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-bus"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 800; color: #111827; font-size: 14px;">{{ $booking->pickup_location }} &rarr; {{ $booking->destination }}</div>
+                                        <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">{{ $booking->date->format('M d, Y') }}</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; background: #f3f4f6; color: #374151;">{{ $booking->status }}</span>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="{{ route('bookings.index') }}" style="font-size: 13px; font-weight: 700; color: var(--maroon); text-decoration: none;">Proceed to Timeline <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></a>
+                        </div>
+                        @endif
                     </div>
                 </div>
 

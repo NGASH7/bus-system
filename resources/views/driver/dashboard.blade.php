@@ -6,17 +6,22 @@
             <div class="driver-hero-banner">
                 <div class="hero-content">
                     <div class="hero-badge">Driver Operations</div>
+                    @php
+                        $todaysTrips = clone $mySchedule;
+                        $todaysTrips = $todaysTrips->filter(function($trip) { return $trip->date->isToday(); });
+                        $nextTrip = $todaysTrips->first();
+                    @endphp
                     <h1 class="hero-title">Ready for Shift, {{ explode(' ', Auth::user()->name)[0] }}?</h1>
-                    <p class="hero-subtitle">You have 4 trips scheduled for today. Safety first, excellence always.</p>
+                    <p class="hero-subtitle">You have {{ $todaysTrips->count() }} trips scheduled for today. Safety first, excellence always.</p>
 
                     <div class="hero-stats-row">
                         <div class="hero-mini-stat">
                             <span class="mini-stat-label">Next Trip</span>
-                            <span class="mini-stat-value">14:00 PM</span>
+                            <span class="mini-stat-value">{{ $nextTrip ? \Carbon\Carbon::parse($nextTrip->pickup_time)->format('H:i A') : '--:--' }}</span>
                         </div>
                         <div class="hero-mini-stat">
                             <span class="mini-stat-label">Assigned Bus</span>
-                            <span class="mini-stat-value">{{ Auth::user()->bus->plate_number ?? 'Not Assigned' }}</span>
+                            <span class="mini-stat-value">{{ $assignedBus ? $assignedBus->plate_number : 'Not Assigned' }}</span>
                         </div>
                     </div>
                 </div>
@@ -32,7 +37,7 @@
                             </div>
                             <div class="stat-info">
                                 <div class="stat-label">Today's Trips</div>
-                                <div class="stat-value">4</div>
+                                <div class="stat-value">{{ $todaysTrips->count() }}</div>
                             </div>
                         </div>
 
@@ -42,8 +47,8 @@
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div class="stat-info">
-                                <div class="stat-label">Driving Hours</div>
-                                <div class="stat-value">6.5</div>
+                                <div class="stat-label">Total Assigned</div>
+                                <div class="stat-value">{{ $mySchedule->count() }}</div>
                             </div>
                         </div>
                     </div>
@@ -82,6 +87,46 @@
                                 <i class="fas fa-bus-slash text-4xl text-gray-200 mb-4 block"></i>
                                 <p class="text-gray-400 font-bold">No Vehicle Assigned Yet</p>
                             </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- NEW SCHEDULE BLOCK -->
+                    <div class="content-white-card mt-8">
+                        <div class="card-header">
+                            <h3 class="card-title">My Operations Log</h3>
+                        </div>
+                        <div class="card-body p-6" style="padding: 24px;">
+                            @if($mySchedule->isEmpty())
+                                <div style="text-align: center; padding: 40px 20px;">
+                                    <i class="fas fa-calendar-check" style="font-size: 30px; color: #d1d5db; margin-bottom: 15px;"></i>
+                                    <p style="color: #6b7280; font-weight: 500; font-size: 14px;">No upcoming trips assigned to your vehicle at this moment.</p>
+                                </div>
+                            @else
+                                <div style="display: flex; flex-direction: column; gap: 15px;">
+                                    @foreach($mySchedule as $trip)
+                                    <div style="display: flex; align-items: stretch; border: 1px solid #f3f4f6; border-radius: 12px; overflow: hidden; background: #fff;">
+                                        <div style="width: 80px; background: {{ $trip->date->isToday() ? '#fff0f0' : '#f9fafb' }}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; border-right: 1px solid #f3f4f6;">
+                                            <span style="font-size: 10px; font-weight: 900; color: {{ $trip->date->isToday() ? 'var(--maroon)' : '#9ca3af' }}; text-transform: uppercase;">{{ $trip->date->format('M') }}</span>
+                                            <span style="font-size: 20px; font-weight: 900; color: #111827;">{{ $trip->date->format('d') }}</span>
+                                        </div>
+                                        <div style="flex: 1; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                                    <span style="font-weight: 900; font-size: 15px; color: #111827;">{{ \Carbon\Carbon::parse($trip->pickup_time)->format('H:i') }}</span>
+                                                    @if($trip->date->isToday()) <span style="background: #10b981; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">Today</span> @endif
+                                                </div>
+                                                <div style="font-size: 14px; font-weight: 700; color: #4b5563;">{{ $trip->pickup_location }} &rarr; {{ $trip->destination }}</div>
+                                                <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;"><i class="fas fa-user-tie"></i> Client: {{ $trip->user->name }} &middot; <i class="fas fa-phone-alt"></i> {{ $trip->user->phone_number ?? 'N/A' }}</div>
+                                            </div>
+                                            <div style="text-align: center;">
+                                                <span style="display: block; font-size: 10px; font-weight: 800; color: #6b7280; text-transform: uppercase; margin-bottom: 4px;">Service</span>
+                                                <span style="display: inline-block; padding: 4px 10px; background: #f3f4f6; color: #374151; border-radius: 6px; font-size: 10px; font-weight: 800;">{{ $trip->service_type ?? 'Standard' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
                             @endif
                         </div>
                     </div>

@@ -213,7 +213,7 @@
                 <a href="{{ route('driver.dashboard') }}" class="nav-item {{ request()->routeIs('driver.dashboard') ? 'active' : '' }}">
                     <i class="fas fa-th-large"></i> Dashboard
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('driver.schedule') }}" class="nav-item {{ request()->routeIs('driver.schedule') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i> My Schedule
                 </a>
                 <a href="#" class="nav-item">
@@ -225,7 +225,7 @@
                 <a href="#" class="nav-item">
                     <i class="fas fa-screwdriver-wrench"></i> Bus Service
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('driver.history') }}" class="nav-item {{ request()->routeIs('driver.history') ? 'active' : '' }}">
                     <i class="fas fa-history"></i> Trip History
                 </a>
                 <a href="#" class="nav-item">
