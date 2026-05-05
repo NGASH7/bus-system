@@ -205,8 +205,8 @@
         <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <img src="{{ asset('Images/image.png') }}" alt="Logo">
-                <span style="font-family:'Outfit',sans-serif; font-weight:800; font-size:16px;">Mwigito Excel</span>
+                <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Bus System" title="Mwigito Excel Bus System">
+                <span style="font-family:'Outfit',sans-serif; font-weight:800; font-size:16px;">MWIGITO EXCEL</span>
             </div>
 
             <nav class="sidebar-nav">
@@ -214,17 +214,14 @@
                     class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-th-large"></i> Dashboard
                 </a>
-                <a href="{{ route('bookings.create') }}" class="nav-item {{ request()->routeIs('bookings.*') ? 'active' : '' }}">
+                <a href="{{ route('bookings.create') }}" class="nav-item {{ request()->routeIs('bookings.create') ? 'active' : '' }}">
                     <i class="fas fa-bus"></i> Book A Bus
                 </a>
-                <a href="{{ route('bookings.index') }}" class="nav-item {{ request()->routeIs('bookings.index') ? 'active' : '' }}">
+                <a href="{{ route('bookings.index') }}" class="nav-item {{ request()->routeIs('bookings.index') || (request()->routeIs('bookings.*') && !request()->routeIs('bookings.create')) ? 'active' : '' }}">
                     <i class="fas fa-history"></i> My Bookings
                 </a>
                 <a href="#" class="nav-item">
                     <i class="fas fa-receipt"></i> Receipts
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
                 </a>
             </nav>
 

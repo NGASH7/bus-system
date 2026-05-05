@@ -1,172 +1,184 @@
 <x-user-layout>
     <div class="user-bookings-wrapper fade-up">
-        
+
         <div class="bookings-hero">
             <div class="hero-decorative-bar"></div>
             <h1 class="hero-title">MY BOOKINGS</h1>
-            <p class="hero-subtitle">Track your reservations, review administrative responses, and manage counter-offers.</p>
+            <p class="hero-subtitle">Track your reservations, review administrative responses, and manage
+                counter-offers.</p>
         </div>
 
         @if(session('success'))
-        <div class="alert alert-success mt-2">
-            <div class="alert-icon"><i class="fas fa-check"></i></div>
-            <span>{{ session('success') }}</span>
-        </div>
+            <div class="alert alert-success mt-2">
+                <div class="alert-icon"><i class="fas fa-check"></i></div>
+                <span>{{ session('success') }}</span>
+            </div>
         @endif
-        
+
         @if(session('error'))
-        <div class="alert alert-error mt-2">
-            <div class="alert-icon"><i class="fas fa-exclamation"></i></div>
-            <span>{{ session('error') }}</span>
-        </div>
+            <div class="alert alert-error mt-2">
+                <div class="alert-icon"><i class="fas fa-exclamation"></i></div>
+                <span>{{ session('error') }}</span>
+            </div>
         @endif
 
         <div class="bookings-grid">
             @forelse($bookings as $booking)
-            <div class="premium-ticket-card {{ 'border-' . strtolower($booking->status) }}">
-                
-                <!-- Status Bar -->
-                <div class="card-status-bar">
-                    @php
-                        $statusClass = 'status-' . strtolower($booking->status);
-                        if(!in_array($booking->status, ['pending', 'accepted', 'rejected', 'countered'])) {
-                            $statusClass = 'status-default';
-                        }
-                    @endphp
-                    <span class="status-badge {{ $statusClass }}">
-                        <i class="fas fa-circle"></i> {{ str_replace('_', ' ', $booking->status) }}
-                    </span>
-                    <span class="booking-date">Requested on {{ $booking->created_at->format('M d, Y') }} | ID #{{ 1000 + $booking->id }}</span>
-                </div>
+                <div class="premium-ticket-card {{ 'border-' . strtolower($booking->status) }}">
 
-                <!-- Main Content -->
-                <div class="card-layout-split">
-                    
-                    <!-- Left: Route Info -->
-                    <div class="route-section">
-                        <div class="service-tag">
-                            <i class="fas fa-gem"></i> {{ $booking->service_type ?? 'Standard Lease' }}
-                        </div>
-                        
-                        <div class="route-visual-block">
-                            <div class="route-point">
-                                <div class="point-icon bg-dark">A</div>
-                                <div class="point-details">
-                                    <span class="point-label">From</span>
-                                    <strong class="point-name">{{ $booking->pickup_location }}</strong>
-                                </div>
-                            </div>
-                            <div class="route-connector">
-                                <div class="connector-line"></div>
-                                <div class="connector-icon"><i class="fas fa-bus-alt"></i></div>
-                            </div>
-                            <div class="route-point pb-0">
-                                <div class="point-icon bg-maroon">B</div>
-                                <div class="point-details">
-                                    <span class="point-label">To</span>
-                                    <strong class="point-name">{{ $booking->destination }}</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="trip-time-box">
-                            <div class="time-item">
-                                <i class="far fa-calendar-check text-maroon"></i> 
-                                <div>
-                                    <span class="text-mini">Departing on</span>
-                                    <strong>{{ $booking->date->format('l, M d, Y') }}</strong> at <strong>{{ \Carbon\Carbon::parse($booking->pickup_time)->format('H:i') }}</strong>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Status Bar -->
+                    <div class="card-status-bar">
+                        @php
+                            $statusClass = 'status-' . strtolower($booking->status);
+                            if (!in_array($booking->status, ['pending', 'accepted', 'rejected', 'countered'])) {
+                                $statusClass = 'status-default';
+                            }
+                        @endphp
+                        <span class="status-badge {{ $statusClass }}">
+                            <i class="fas fa-circle"></i> {{ str_replace('_', ' ', $booking->status) }}
+                        </span>
+                        <span class="booking-date">Requested on {{ $booking->created_at->format('M d, Y') }} | ID
+                            #{{ 1000 + $booking->id }}</span>
                     </div>
 
-                    <!-- Right: Financial & Actions -->
-                    <div class="financial-section">
-                        <div class="financial-split mb-4">
-                            <div class="offer-box">
-                                <span class="box-label">Your Initial Offer</span>
-                                <div class="amount-value">KES {{ number_format($booking->offered_price, 0) }}</div>
+                    <!-- Main Content -->
+                    <div class="card-layout-split">
+
+                        <!-- Left: Route Info -->
+                        <div class="route-section">
+                            <div class="service-tag">
+                                <i class="fas fa-gem"></i> {{ $booking->service_type ?? 'Standard Lease' }}
                             </div>
-                            
-                            @if($booking->counter_price)
-                            <div class="offer-box counter-box">
-                                <span class="box-label text-gold"><i class="fas fa-reply"></i> Admin Counter-Offer</span>
-                                <div class="amount-value text-gold">KES {{ number_format($booking->counter_price, 0) }}</div>
+
+                            <div class="route-visual-block">
+                                <div class="route-point">
+                                    <div class="point-icon bg-dark">A</div>
+                                    <div class="point-details">
+                                        <span class="point-label">From</span>
+                                        <strong class="point-name">{{ $booking->pickup_location }}</strong>
+                                    </div>
+                                </div>
+                                <div class="route-connector">
+                                    <div class="connector-line"></div>
+                                    <div class="connector-icon"><i class="fas fa-bus-alt"></i></div>
+                                </div>
+                                <div class="route-point pb-0">
+                                    <div class="point-icon bg-maroon">B</div>
+                                    <div class="point-details">
+                                        <span class="point-label">To</span>
+                                        <strong class="point-name">{{ $booking->destination }}</strong>
+                                    </div>
+                                </div>
                             </div>
-                            @endif
+
+                            <div class="trip-time-box">
+                                <div class="time-item">
+                                    <i class="far fa-calendar-check text-maroon"></i>
+                                    <div>
+                                        <span class="text-mini">Departing on</span>
+                                        <strong>{{ $booking->date->format('l, M d, Y') }}</strong> at
+                                        <strong>{{ \Carbon\Carbon::parse($booking->pickup_time)->format('H:i') }}</strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- User Actions (If Countered) -->
-                        <div class="action-panel-container">
-                            @if($booking->status === 'countered')
-                            <div class="action-footer bg-counter">
-                                <div class="action-icon-large text-blue"><i class="fas fa-handshake"></i></div>
-                                <div class="action-content">
-                                    <p class="action-note">The fleet management team has reviewed your request and proposed a counter-offer. You may accept it to lock in your reservation.</p>
-                                    <form action="{{ route('bookings.accept-counter', $booking->id) }}" method="POST" class="mt-3">
-                                        @csrf
-                                        <button type="submit" class="btn-ticket btn-dark w-100">
-                                            ACCEPT COUNTER-OFFER
-                                        </button>
-                                    </form>
+                        <!-- Right: Financial & Actions -->
+                        <div class="financial-section">
+                            <div class="financial-split mb-4">
+                                <div class="offer-box">
+                                    <span class="box-label">Your Initial Offer</span>
+                                    <div class="amount-value">KES {{ number_format($booking->offered_price, 0) }}</div>
                                 </div>
+
+                                @if($booking->counter_price)
+                                    <div class="offer-box counter-box">
+                                        <span class="box-label text-gold"><i class="fas fa-reply"></i> Admin
+                                            Counter-Offer</span>
+                                        <div class="amount-value text-gold">KES {{ number_format($booking->counter_price, 0) }}
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-                            @elseif($booking->status === 'accepted')
-                            <div class="action-footer bg-success">
-                                <div class="action-icon-large text-green"><i class="fas fa-check-shield"></i></div>
-                                <div class="action-content">
-                                    <p class="action-title text-green">Reservation Confirmed</p>
-                                    <p class="action-note text-green-dark">Your trip is locked in the master schedule. You have secured the vehicle for this journey.</p>
-                                </div>
-                            </div>
-                            @if($booking->bus && $booking->bus->driver)
-                            <div class="driver-contact-pill">
-                                <div class="driver-avatar-sm">{{ strtoupper(substr($booking->bus->driver->name, 0, 1)) }}</div>
-                                <div class="driver-info">
-                                    <span class="driver-lbl">Your Driver</span>
-                                    <strong class="driver-name">{{ $booking->bus->driver->name }}</strong>
-                                    @if($booking->bus->driver->phone_number)
-                                    <a href="tel:{{ $booking->bus->driver->phone_number }}" class="driver-phone">
-                                        <i class="fas fa-phone-alt"></i> {{ $booking->bus->driver->phone_number }}
-                                    </a>
-                                    @else
-                                    <span class="driver-phone" style="opacity:0.5;">Phone not provided</span>
+
+                            <!-- User Actions (If Countered) -->
+                            <div class="action-panel-container">
+                                @if($booking->status === 'countered')
+                                    <div class="action-footer bg-counter">
+                                        <div class="action-icon-large text-blue"><i class="fas fa-handshake"></i></div>
+                                        <div class="action-content">
+                                            <p class="action-note">The fleet management team has reviewed your request and
+                                                proposed a counter-offer. You may accept it to lock in your reservation.</p>
+                                            <form action="{{ route('bookings.accept-counter', $booking->id) }}" method="POST"
+                                                class="mt-3">
+                                                @csrf
+                                                <button type="submit" class="btn-ticket btn-dark w-100">
+                                                    ACCEPT COUNTER-OFFER
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                @elseif($booking->status === 'accepted')
+                                    <div class="action-footer bg-success">
+                                        <div class="action-icon-large text-green"><i class="fas fa-check-shield"></i></div>
+                                        <div class="action-content">
+                                            <p class="action-title text-green">Reservation Confirmed</p>
+                                            <p class="action-note text-green-dark">Your trip is locked in the master schedule.
+                                                You have secured the vehicle for this journey.</p>
+                                        </div>
+                                    </div>
+                                    @if($booking->bus && $booking->bus->driver)
+                                        <div class="driver-contact-pill">
+                                            <div class="driver-avatar-sm">
+                                                {{ strtoupper(substr($booking->bus->driver->name, 0, 1)) }}</div>
+                                            <div class="driver-info">
+                                                <span class="driver-lbl">Your Driver</span>
+                                                <strong class="driver-name">{{ $booking->bus->driver->name }}</strong>
+                                                @if($booking->bus->driver->phone_number)
+                                                    <a href="tel:{{ $booking->bus->driver->phone_number }}" class="driver-phone">
+                                                        <i class="fas fa-phone-alt"></i> {{ $booking->bus->driver->phone_number }}
+                                                    </a>
+                                                @else
+                                                    <span class="driver-phone" style="opacity:0.5;">Phone not provided</span>
+                                                @endif
+                                            </div>
+                                        </div>
                                     @endif
-                                </div>
+                                @elseif($booking->status === 'rejected')
+                                    <div class="action-footer bg-danger">
+                                        <div class="action-icon-large text-red"><i class="fas fa-ban"></i></div>
+                                        <div class="action-content">
+                                            <p class="action-title text-red">Request Declined</p>
+                                            <p class="action-note text-red-dark">Unfortunately, this requested booking could not
+                                                be accommodated by our fleet at the moment.</p>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="action-footer bg-pending">
+                                        <div class="action-icon-large text-orange"><i class="fas fa-hourglass-half"></i></div>
+                                        <div class="action-content">
+                                            <p class="action-title text-orange">Awaiting Review</p>
+                                            <p class="action-note text-orange-dark">Your offer was successfully submitted and is
+                                                currently pending review by the administrative team.</p>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-                            @endif
-                            @elseif($booking->status === 'rejected')
-                            <div class="action-footer bg-danger">
-                                <div class="action-icon-large text-red"><i class="fas fa-ban"></i></div>
-                                <div class="action-content">
-                                    <p class="action-title text-red">Request Declined</p>
-                                    <p class="action-note text-red-dark">Unfortunately, this requested booking could not be accommodated by our fleet at the moment.</p>
-                                </div>
-                            </div>
-                            @else
-                            <div class="action-footer bg-pending">
-                                <div class="action-icon-large text-orange"><i class="fas fa-hourglass-half"></i></div>
-                                <div class="action-content">
-                                    <p class="action-title text-orange">Awaiting Review</p>
-                                    <p class="action-note text-orange-dark">Your offer was successfully submitted and is currently pending review by the administrative team.</p>
-                                </div>
-                            </div>
-                            @endif
                         </div>
                     </div>
                 </div>
-            </div>
             @empty
-            <div class="empty-state-premium">
-                <div class="empty-icon-wrap">
-                    <i class="fas fa-ticket-alt"></i>
+                <div class="empty-state-premium">
+                    <div class="empty-icon-wrap">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3>Your Travel Log is Empty</h3>
+                    <p>You haven't requested any custom operations yet. We provide premium luxury charter services for any
+                        occasion.</p>
+                    <a href="{{ route('bookings.create') }}" class="btn-ticket btn-maroon mt-4">
+                        PROPOSE A BOOKING <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
-                <h3>Your Travel Log is Empty</h3>
-                <p>You haven't requested any custom operations yet. We provide premium luxury charter services for any occasion.</p>
-                <a href="{{ route('bookings.create') }}" class="btn-ticket btn-maroon mt-4">
-                    PROPOSE A BOOKING <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
             @endforelse
         </div>
 
@@ -189,11 +201,27 @@
             padding: 50px 20px;
         }
 
-        .mt-2 { margin-top: 1rem; }
-        .mt-3 { margin-top: 1.5rem; }
-        .mt-4 { margin-top: 2rem; }
-        .w-100 { width: 100%; display: block; }
-        .pb-0 { padding-bottom: 0 !important; border-bottom: none !important; }
+        .mt-2 {
+            margin-top: 1rem;
+        }
+
+        .mt-3 {
+            margin-top: 1.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 2rem;
+        }
+
+        .w-100 {
+            width: 100%;
+            display: block;
+        }
+
+        .pb-0 {
+            padding-bottom: 0 !important;
+            border-bottom: none !important;
+        }
 
         .bookings-hero {
             position: relative;
@@ -236,7 +264,7 @@
             border-radius: 16px;
             font-weight: 800;
             margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
         }
 
         .alert-icon {
@@ -251,11 +279,25 @@
             flex-shrink: 0;
         }
 
-        .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
-        .alert-success .alert-icon { background: #16a34a; }
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
 
-        .alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-        .alert-error .alert-icon { background: #dc2626; }
+        .alert-success .alert-icon {
+            background: #16a34a;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-error .alert-icon {
+            background: #dc2626;
+        }
 
         /* THE GRID */
         .bookings-grid {
@@ -269,22 +311,33 @@
             background: white;
             border-radius: 24px;
             position: relative;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
             border: 2px solid #f3f4f6;
         }
 
         .premium-ticket-card:hover {
-            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
             transform: translateY(-4px);
         }
 
         /* Dynamic Border Coloring */
-        .premium-ticket-card.border-pending { border-left: 6px solid #f59e0b; }
-        .premium-ticket-card.border-accepted { border-left: 6px solid #10b981; }
-        .premium-ticket-card.border-rejected { border-left: 6px solid #ef4444; }
-        .premium-ticket-card.border-countered { border-left: 6px solid #3b82f6; }
+        .premium-ticket-card.border-pending {
+            border-left: 6px solid #f59e0b;
+        }
+
+        .premium-ticket-card.border-accepted {
+            border-left: 6px solid #10b981;
+        }
+
+        .premium-ticket-card.border-rejected {
+            border-left: 6px solid #ef4444;
+        }
+
+        .premium-ticket-card.border-countered {
+            border-left: 6px solid #3b82f6;
+        }
 
         .card-status-bar {
             display: flex;
@@ -307,17 +360,54 @@
             letter-spacing: 1.5px;
         }
 
-        .status-badge i { font-size: 8px; animation: pulse 2s infinite; }
-        
-        @keyframes pulse {
-            0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; }
+        .status-badge i {
+            font-size: 8px;
+            animation: pulse 2s infinite;
         }
 
-        .status-pending { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
-        .status-accepted { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
-        .status-rejected { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-        .status-countered { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-        .status-default { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+        @keyframes pulse {
+            0% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.4;
+            }
+        }
+
+        .status-pending {
+            background: #fffbeb;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        .status-accepted {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-rejected {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .status-countered {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        .status-default {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
 
         .booking-date {
             font-size: 12px;
@@ -333,7 +423,9 @@
         }
 
         @media(max-width: 850px) {
-            .card-layout-split { grid-template-columns: 1fr; }
+            .card-layout-split {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* LEFT SECTION: ROUTE VISUAL */
@@ -344,7 +436,10 @@
         }
 
         @media(max-width: 850px) {
-            .route-section { border-right: none; border-bottom: 1px dashed #e5e7eb; }
+            .route-section {
+                border-right: none;
+                border-bottom: 1px dashed #e5e7eb;
+            }
         }
 
         .service-tag {
@@ -385,11 +480,16 @@
             font-size: 14px;
             position: relative;
             z-index: 2;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .bg-dark { background: var(--gray-deep); }
-        .bg-maroon { background: var(--maroon); }
+        .bg-dark {
+            background: var(--gray-deep);
+        }
+
+        .bg-maroon {
+            background: var(--maroon);
+        }
 
         .point-details {
             display: flex;
@@ -454,7 +554,7 @@
             padding: 20px;
             display: flex;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
         }
 
         .time-item {
@@ -503,7 +603,7 @@
         .counter-box {
             background: linear-gradient(135deg, var(--gold-light), #fff);
             border-color: #fde68a;
-            box-shadow: 0 4px 15px rgba(212,175,55,0.1);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
         }
 
         .box-label {
@@ -516,7 +616,9 @@
             margin-bottom: 8px;
         }
 
-        .text-gold { color: #b45309; }
+        .text-gold {
+            color: #b45309;
+        }
 
         .amount-value {
             font-family: 'Outfit', sans-serif;
@@ -563,12 +665,27 @@
             line-height: 1.6;
         }
 
-        .bg-counter { background: #eff6ff; border: 1px solid #bfdbfe; }
-        .text-blue { color: #1d4ed8; }
+        .bg-counter {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+        }
 
-        .bg-success { background: #f0fdf4; border: 1px solid #bbf7d0; }
-        .text-green { color: #15803d; }
-        .text-green-dark { color: #166534; }
+        .text-blue {
+            color: #1d4ed8;
+        }
+
+        .bg-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        .text-green {
+            color: #15803d;
+        }
+
+        .text-green-dark {
+            color: #166534;
+        }
 
         /* DRIVER CONTACT PILL */
         .driver-contact-pill {
@@ -580,7 +697,7 @@
             background: white;
             border: 1.5px solid #a7f3d0;
             border-radius: 14px;
-            box-shadow: 0 2px 8px rgba(16,185,129,0.06);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.06);
         }
 
         .driver-avatar-sm {
@@ -631,13 +748,31 @@
             text-decoration: underline;
         }
 
-        .bg-danger { background: #fef2f2; border: 1px solid #fecaca; }
-        .text-red { color: #b91c1c; }
-        .text-red-dark { color: #991b1b; }
+        .bg-danger {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
 
-        .bg-pending { background: #fffbeb; border: 1px solid #fde68a; }
-        .text-orange { color: #b45309; }
-        .text-orange-dark { color: #92400e; }
+        .text-red {
+            color: #b91c1c;
+        }
+
+        .text-red-dark {
+            color: #991b1b;
+        }
+
+        .bg-pending {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+        }
+
+        .text-orange {
+            color: #b45309;
+        }
+
+        .text-orange-dark {
+            color: #92400e;
+        }
 
         .btn-ticket {
             display: inline-flex;
@@ -663,7 +798,7 @@
         .btn-dark:hover {
             background: black;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .btn-maroon {
@@ -675,7 +810,7 @@
         .btn-maroon:hover {
             background: var(--maroon-dark);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(128,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(128, 0, 0, 0.2);
         }
 
         .empty-state-premium {
@@ -724,8 +859,15 @@
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </x-user-layout>

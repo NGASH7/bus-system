@@ -60,10 +60,7 @@
                             <i class="fas fa-car-side"></i>
                         </div>
                         <div class="ic-fields">
-                            <div class="ic-field">
-                                <span class="ic-label">Insured Name</span>
-                                <span class="ic-value">{{ $driver->name ?? 'N/A' }}</span>
-                            </div>
+                            {{-- Insured Name removed as per request --}}
                             <div class="ic-field">
                                 <span class="ic-label">Policy Number</span>
                                 <span class="ic-value mono">{{ $insurance->policy_number ?? 'N/A' }}</span>
@@ -129,9 +126,11 @@
                                     class="fas fa-hourglass-half"></i></div>
                             <div class="countdown-label">Days Until Insurance Expiry</div>
                             <div class="countdown-number {{ $insuranceExpiryStatus ?? 'none' }}-num">
-                                {{ $insuranceDaysLeft ?? 0 }}</div>
+                                {{ $insuranceDaysLeft ?? 0 }}
+                            </div>
                             <div class="countdown-sub">Expires on
-                                {{ \Carbon\Carbon::parse($insurance->expiry_date)->format('l, d M Y') }}</div>
+                                {{ \Carbon\Carbon::parse($insurance->expiry_date)->format('l, d M Y') }}
+                            </div>
 
                             @php
                                 $totalDays = 365;

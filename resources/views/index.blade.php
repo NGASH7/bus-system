@@ -1196,7 +1196,7 @@
     <nav class="navbar">
         <div class="nav-inner">
             <a href="/" class="nav-logo">
-                <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Logo"
+                <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Bus System" title="Mwigito Excel Bus System"
                     style="height: 50px; width: auto; object-fit: contain;">
                 <div class="nav-logo-text">
                     <div class="school">Mwigito Excel</div>
@@ -1454,7 +1454,7 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <div class="logo" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                        <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Logo"
+                        <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Bus System" title="Mwigito Excel Bus System"
                             style="height: 45px; width: auto; object-fit: contain;">
                         <div class="name"
                             style="font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 800; color: white;">

@@ -94,7 +94,6 @@
                         </div>
                         <h4 class="mini-name">{{ Auth::user()->name }}</h4>
                         <p class="mini-email">{{ Auth::user()->email }}</p>
-                        <a href="{{ route('profile.edit') }}" class="btn-mini-profile">Account Settings</a>
                     </div>
 
                     <div class="loyalty-premium-card">

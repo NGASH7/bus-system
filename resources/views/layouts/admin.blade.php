@@ -256,8 +256,8 @@
         <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <img src="{{ asset('Images/image.png') }}" alt="Logo">
-                <span style="font-family:'Outfit',sans-serif; font-weight:800; font-size:16px;">ADMIN PANEL</span>
+                <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Bus System" title="Mwigito Excel Bus System">
+                <span style="font-family:'Outfit',sans-serif; font-weight:800; font-size:16px;">MWIGITO EXCEL</span>
             </div>
 
             <nav class="sidebar-nav">
@@ -273,10 +273,10 @@
                     class="nav-item {{ request()->routeIs('admin.drivers.*') ? 'active' : '' }}">
                     <i class="fas fa-id-card"></i> Drivers
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('admin.analytics.index') }}" class="nav-item {{ request()->routeIs('admin.analytics.index') ? 'active' : '' }}">
                     <i class="fas fa-chart-line"></i> Analytics
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('admin.insurance.index') }}" class="nav-item {{ request()->routeIs('admin.insurance.*') ? 'active' : '' }}">
                     <i class="fas fa-shield-alt"></i> Insurance
                 </a>
                 <a href="{{ route('admin.schedule.index') }}" class="nav-item {{ request()->routeIs('admin.schedule.*') ? 'active' : '' }}">
@@ -285,15 +285,12 @@
                 <a href="{{ route('admin.bookings.index') }}" class="nav-item {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}">
                     <i class="fas fa-ticket-alt"></i> Bookings
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('admin.billing.index') }}" class="nav-item {{ request()->routeIs('admin.billing.index') ? 'active' : '' }}">
                     <i class="fas fa-file-invoice-dollar"></i> Billing
                 </a>
                 <a href="{{ route('admin.receipts.index') }}"
                     class="nav-item {{ request()->routeIs('admin.receipts.*') ? 'active' : '' }}">
                     <i class="fas fa-receipt"></i> Receipts
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
                 </a>
                 <a href="#" class="nav-item">
                     <i class="fas fa-history"></i> System Log
@@ -316,7 +313,7 @@
         <!-- MAIN -->
         <div class="main-wrapper">
             <header class="admin-header">
-                <div class="header-title">Mwigito Excel - Bus Management System</div>
+                <div class="header-title">Mwigito Excel Bus Management System</div>
                 <div class="header-actions">
                     <a href="#" class="header-btn notification-btn" title="Notifications" aria-label="Notifications">
                         <i class="fas fa-bell"></i>

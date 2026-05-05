@@ -66,6 +66,9 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
         // Driver Management
         Route::resource('drivers', AdminDriverController::class);
 
+        // Analytics
+        Route::get('analytics', [\App\Http\Controllers\AdminAnalyticsController::class, 'index'])->name('analytics.index');
+
         // Bookings Management
         Route::post('bookings/{booking}/accept', [AdminBookingController::class, 'accept'])->name('bookings.accept');
         Route::post('bookings/{booking}/reject', [AdminBookingController::class, 'reject'])->name('bookings.reject');
@@ -77,6 +80,14 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
 
         // Receipts Management
         Route::resource('receipts', \App\Http\Controllers\AdminReceiptController::class);
+
+        // Insurance Management
+        Route::resource('insurance', \App\Http\Controllers\AdminInsuranceController::class);
+
+        // Billing & Bus Services
+        Route::get('billing', [\App\Http\Controllers\BusServiceController::class, 'adminIndex'])->name('billing.index');
+        Route::post('billing', [\App\Http\Controllers\BusServiceController::class, 'adminStore'])->name('billing.store');
+        Route::patch('bus-service/{busService}/status', [\App\Http\Controllers\BusServiceController::class, 'updateStatus'])->name('bus-service.update-status');
     });
 
     // Booking Routes (User)
@@ -92,6 +103,10 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
         Route::get('/driver/history', [DriverController::class, 'history'])->name('driver.history');
         Route::get('/driver/license', [DriverController::class, 'license'])->name('driver.license');
         Route::get('/driver/insurance', [DriverController::class, 'insurance'])->name('driver.insurance');
+        
+        // Bus Service
+        Route::get('/driver/bus-service', [\App\Http\Controllers\BusServiceController::class, 'driverIndex'])->name('driver.bus-service.index');
+        Route::post('/driver/bus-service', [\App\Http\Controllers\BusServiceController::class, 'driverStore'])->name('driver.bus-service.store');
     });
 });
 

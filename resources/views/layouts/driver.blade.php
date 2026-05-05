@@ -210,8 +210,8 @@
     <div class="driver-container">
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <img src="{{ asset('Images/image.png') }}" alt="Logo">
-                <span style="font-family:'Outfit',sans-serif; font-weight:800; font-size:16px;">DRIVER PORTAL</span>
+                <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Bus System" title="Mwigito Excel Bus System">
+                <span style="font-family:'Outfit',sans-serif; font-weight:800; font-size:16px;">MWIGITO EXCEL</span>
             </div>
 
             <nav class="sidebar-nav">
@@ -230,15 +230,12 @@
                 <a href="{{ route('driver.insurance') }}" class="nav-item">
                     <i class="fas fa-shield-alt"></i> Insurance
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('driver.bus-service.index') }}" class="nav-item {{ request()->routeIs('driver.bus-service.index') ? 'active' : '' }}">
                     <i class="fas fa-screwdriver-wrench"></i> Bus Service
                 </a>
                 <a href="{{ route('driver.history') }}"
                     class="nav-item {{ request()->routeIs('driver.history') ? 'active' : '' }}">
                     <i class="fas fa-history"></i> Trip History
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
                 </a>
             </nav>
 
@@ -257,7 +254,7 @@
 
         <div class="main-wrapper">
             <header class="driver-header">
-                <div class="header-title">Mwigito Excel - Bus System</div>
+                <div class="header-title">Mwigito Excel Bus Management System</div>
                 <div class="header-actions">
                     <a href="#" class="header-btn notification-btn" title="Notifications" aria-label="Notifications">
                         <i class="fas fa-bell"></i>

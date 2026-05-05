@@ -219,7 +219,7 @@
             <div class="auth-card fade-up">
                 <div class="logo-header">
                     <a href="/">
-                        <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Logo">
+                        <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Bus System" title="Mwigito Excel Bus System">
                     </a>
                     <h2>{{ $title ?? 'WELCOME BACK' }}</h2>
                     <p>{{ $subtitle ?? 'Enter your credentials to access the system' }}</p>
