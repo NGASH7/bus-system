@@ -1,14 +1,14 @@
-<x-admin-layout>
+<x-dynamic-component :component="Auth::user()->role === 'admin' ? 'admin-layout' : 'user-layout'">
     <div class="receipt-show-wrapper fade-up">
         <div class="max-w-3xl mx-auto">
 
             <!-- HEADER ACTIONS -->
             <div class="flex justify-between items-center mb-8 no-print">
-                <a href="{{ route('admin.receipts.index') }}" class="btn-back">
+                <a href="{{ Auth::user()->role === 'admin' ? route('admin.receipts.index') : route('receipts.index') }}" class="btn-back">
                     <i class="fas fa-arrow-left mr-2"></i> Back to History
                 </a>
                 <div class="flex gap-4">
-                    @if($receipt->booking_id)
+                    @if($receipt->booking_id && Auth::user()->role === 'admin')
                     <form action="{{ route('admin.receipts.send', $receipt->id) }}" method="POST">
                         @csrf
                         <button type="submit" class="btn-send-client">
@@ -563,4 +563,4 @@
             }
         }
     </style>
-</x-admin-layout>
+</x-dynamic-component>
