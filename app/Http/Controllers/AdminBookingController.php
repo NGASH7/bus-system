@@ -3,30 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Support\SystemActivity;
 use Illuminate\Http\Request;
 
 class AdminBookingController extends Controller
 {
     public function index()
     {
-        // Only show bookings that need attention (pending or countered)
-        $bookings = Booking::with(['user', 'bus'])
-            ->whereNotIn('status', ['accepted', 'rejected'])
-            ->latest()
-            ->get();
-            
+        $bookings = Booking::with(['user', 'bus'])->latest()->get();
         return view('admin.bookings.index', compact('bookings'));
-    }
-
-    public function history()
-    {
-        // Show bookings that are already finalized
-        $bookings = Booking::with(['user', 'bus'])
-            ->whereIn('status', ['accepted', 'rejected'])
-            ->latest()
-            ->get();
-            
-        return view('admin.bookings.history', compact('bookings'));
     }
 
     public function show(Booking $booking)
@@ -40,10 +25,14 @@ class AdminBookingController extends Controller
         $booking->update([
             'status' => 'accepted'
         ]);
-        
-        // Redirect to receipt generation with pre-filled data
-        return redirect()->route('admin.receipts.create', ['booking_id' => $booking->id])
-            ->with('success', 'Booking accepted. Review and generate the receipt below.');
+        SystemActivity::record(
+            'booking.accepted',
+            auth()->user()->name . " accepted booking #{$booking->id}.",
+            auth()->user(),
+            ['booking_id' => $booking->id]
+        );
+
+        return redirect()->route('admin.bookings.show', $booking->id)->with('success', 'Offer accepted and booking confirmed.');
     }
 
     public function reject(Booking $booking)
@@ -51,6 +40,12 @@ class AdminBookingController extends Controller
         $booking->update([
             'status' => 'rejected'
         ]);
+        SystemActivity::record(
+            'booking.rejected',
+            auth()->user()->name . " rejected booking #{$booking->id}.",
+            auth()->user(),
+            ['booking_id' => $booking->id]
+        );
 
         return redirect()->route('admin.bookings.show', $booking->id)->with('success', 'Booking offer has been rejected.');
     }
@@ -65,6 +60,12 @@ class AdminBookingController extends Controller
             'counter_price' => $request->counter_price,
             'status' => 'countered'
         ]);
+        SystemActivity::record(
+            'booking.countered',
+            auth()->user()->name . " countered booking #{$booking->id} with {$request->counter_price}.",
+            auth()->user(),
+            ['booking_id' => $booking->id, 'counter_price' => $request->counter_price]
+        );
 
         return redirect()->route('admin.bookings.show', $booking->id)->with('success', 'Counter-offer has been sent to the user.');
     }

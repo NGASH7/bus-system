@@ -220,7 +220,7 @@
                 <a href="{{ route('bookings.index') }}" class="nav-item {{ request()->routeIs('bookings.index') || (request()->routeIs('bookings.*') && !request()->routeIs('bookings.create')) ? 'active' : '' }}">
                     <i class="fas fa-history"></i> My Bookings
                 </a>
-                <a href="{{ route('receipts.index') }}" class="nav-item {{ request()->routeIs('receipts.*') ? 'active' : '' }}">
+                <a href="#" class="nav-item">
                     <i class="fas fa-receipt"></i> Receipts
                 </a>
             </nav>
