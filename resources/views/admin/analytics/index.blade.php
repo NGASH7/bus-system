@@ -7,7 +7,6 @@
                     <h1 class="premium-title">System Analytics</h1>
                     <div class="header-actions">
                         <form action="{{ route('admin.analytics.index') }}" method="GET" class="date-range-form">
-                            <input type="hidden" name="filter" value="{{ $filter }}">
                             <div class="range-inputs">
                                 <div class="input-group">
                                     <label>From Date</label>
@@ -22,12 +21,6 @@
                                 </button>
                             </div>
                         </form>
-
-                        <div class="filter-tabs">
-                            <a href="{{ route('admin.analytics.index', ['filter' => 'daily']) }}" class="filter-tab {{ $filter == 'daily' ? 'active' : '' }}">Daily</a>
-                            <a href="{{ route('admin.analytics.index', ['filter' => 'weekly']) }}" class="filter-tab {{ $filter == 'weekly' ? 'active' : '' }}">Weekly</a>
-                            <a href="{{ route('admin.analytics.index', ['filter' => 'monthly']) }}" class="filter-tab {{ $filter == 'monthly' ? 'active' : '' }}">Monthly</a>
-                        </div>
 
                         <button onclick="window.print()" class="btn-print" title="Print Analytics Report">
                             <i class="fas fa-print"></i>
@@ -71,13 +64,11 @@
                     <div class="stat-info">
                         <span class="stat-label">Period Revenue</span>
                         <h2 class="stat-value">KES {{ number_format($financials['revenue'], 0) }}</h2>
-                        <span class="stat-trend text-green">
-                            @if($financials['revenue'] > 0)
-                                +{{ number_format(($financials['profit'] / $financials['revenue']) * 100, 1) }}% Profit
-                            @else
-                                0% Margin
-                            @endif
-                        </span>
+                        <div class="revenue-breakdown">
+                            <span class="breakdown-item" title="Walk-in Receipts">Admin: {{ number_format($financials['receipt_revenue'] / 1000, 1) }}k</span>
+                            <span class="breakdown-divider">|</span>
+                            <span class="breakdown-item" title="Online Bookings">System: {{ number_format($financials['booking_revenue'] / 1000, 1) }}k</span>
+                        </div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -343,6 +334,10 @@
         .bg-gold-light { background: #fefce8; color: #c9a84c; }
         .stat-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-value { font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 900; color: var(--text-dark); margin: 4px 0; }
+
+        .revenue-breakdown { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .breakdown-item { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+        .breakdown-divider { font-size: 10px; color: #e2e8f0; font-weight: 300; }
 
         /* CHARTS */
         .charts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }

@@ -24,82 +24,76 @@
 
                 <!-- Billing Card -->
                 <div class="admin-stat-card">
-                    <div class="sc-icon-circle danger-tint"><i class="fas fa-file-invoice-dollar"></i></div>
-                    <div class="sc-number danger-text">{{ $stats['billings'] }}</div>
+                    <div class="sc-icon-circle {{ $stats['pending_billing'] > 0 ? 'danger-tint' : '' }}"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <div class="sc-number {{ $stats['pending_billing'] > 0 ? 'danger-text' : '' }}">{{ $stats['pending_billing'] }}</div>
                     <div class="sc-label">PENDING BILLING</div>
                 </div>
 
-                <!-- Receipts Card -->
+                <!-- Revenue Card -->
                 <div class="admin-stat-card">
-                    <div class="sc-icon-circle"><i class="fas fa-receipt"></i></div>
-                    <div class="sc-number">{{ $stats['receipts'] }}</div>
-                    <div class="sc-label">TOTAL RECEIPTS</div>
+                    <div class="sc-icon-circle"><i class="fas fa-hand-holding-usd"></i></div>
+                    <div class="sc-number" style="font-size: 24px;">KES {{ number_format($stats['total_revenue'] / 1000, 1) }}k</div>
+                    <div class="sc-label">TOTAL REVENUE</div>
                 </div>
             </div>
 
-            <!-- RECENT SYSTEM ACTIVITIES -->
+            <!-- CRITICAL ALERTS SECTION -->
+            @if($alerts->count() > 0)
+            <div class="alerts-section fade-up" style="animation-delay: 0.1s; margin-top: 40px;">
+                <div class="section-header-compact mb-6">
+                    <h3 class="section-title-premium text-maroon"><i class="fas fa-exclamation-triangle mr-2"></i> Critical Expiry Alerts</h3>
+                </div>
+                
+                <div class="alerts-grid">
+                    @foreach($alerts as $alert)
+                        <div class="alert-card {{ $alert['status'] == 'Expired' ? 'alert-expired' : 'alert-warning' }}">
+                            <div class="alert-icon">
+                                <i class="{{ $alert['icon'] }}"></i>
+                            </div>
+                            <div class="alert-details">
+                                <div class="alert-header">
+                                    <span class="alert-type">{{ $alert['type'] }}</span>
+                                    <span class="alert-badge">{{ $alert['status'] }}</span>
+                                </div>
+                                <div class="alert-item">{{ $alert['item'] }}</div>
+                                <div class="alert-date">
+                                    Expires: {{ $alert['expiry']->format('d M, Y') }} 
+                                    <span class="alert-countdown">({{ $alert['countdown_text'] }})</span>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            <!-- SYSTEM ACTIVITY LOG -->
             <div class="activity-section fade-up" style="animation-delay: 0.2s;">
                 <div class="section-header-compact mb-6">
                     <h3 class="section-title-premium"><i class="fas fa-history mr-2"></i> System Activity Log</h3>
-                    <a href="#" class="view-all-link">View Everything</a>
+                    <a href="{{ route('admin.logs') }}" class="view-all-link">View Everything</a>
                 </div>
 
                 <div class="activity-container">
-                    <!-- Activity Item 1 -->
-                    <div class="activity-row">
-                        <div class="activity-marker odometer-accent">
-                            <i class="fas fa-tachometer-alt"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-top">
-                                <span class="activity-user">Driver John Doe</span>
-                                <span class="activity-time">14 mins ago</span>
+                    @forelse($activities as $activity)
+                        <div class="activity-row {{ $loop->last ? 'last-row' : '' }}">
+                            <div class="activity-marker {{ $activity['accent'] }}">
+                                <i class="{{ $activity['icon'] }}"></i>
                             </div>
-                            <p class="activity-msg">Clocked new odometer reading <strong>24,500 KM</strong> for Bus <strong>KDP 923K</strong></p>
-                        </div>
-                    </div>
-
-                    <!-- Activity Item 2 -->
-                    <div class="activity-row">
-                        <div class="activity-marker billing-accent">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-top">
-                                <span class="activity-user">System Automated</span>
-                                <span class="activity-time">2 hours ago</span>
+                            <div class="activity-content">
+                                <div class="activity-top">
+                                    <span class="activity-user">{{ $activity['title'] }}</span>
+                                    <span class="activity-time">{{ $activity['time']->diffForHumans() }}</span>
+                                </div>
+                                <p class="activity-msg">{!! $activity['msg'] !!}</p>
                             </div>
-                            <p class="activity-msg">Generated monthly billing record for <strong>Mwigito School Route A</strong></p>
                         </div>
-                    </div>
-
-                    <!-- Activity Item 3 -->
-                    <div class="activity-row">
-                        <div class="activity-marker driver-accent">
-                            <i class="fas fa-user-plus"></i>
+                    @empty
+                        <div class="empty-state py-12 text-center">
+                            <i class="fas fa-stream text-muted text-4xl mb-4"></i>
+                            <p class="text-muted font-bold">No recent system activity recorded.</p>
                         </div>
-                        <div class="activity-content">
-                            <div class="activity-top">
-                                <span class="activity-user">Admin Sarah</span>
-                                <span class="activity-time">5 hours ago</span>
-                            </div>
-                            <p class="activity-msg">Verified new driver documentation for <strong>Michael Kanyingi</strong></p>
-                        </div>
-                    </div>
-
-                    <!-- Activity Item 4 -->
-                    <div class="activity-row last-row">
-                        <div class="activity-marker service-accent">
-                            <i class="fas fa-tools"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-top">
-                                <span class="activity-user">Fleet Manager</span>
-                                <span class="activity-time">Yesterday</span>
-                            </div>
-                            <p class="activity-msg">Maintenance scheduled for <strong>Bus KDP 112L</strong> (Engine Diagnostic)</p>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -299,6 +293,35 @@
         }
 
         .activity-msg strong { color: var(--text-main); font-weight: 700; }
+        .text-maroon { color: var(--maroon); }
+
+        .activity-action {
+            flex-shrink: 0;
+        }
+
+        .btn-verify {
+            text-decoration: none;
+            background: var(--maroon-light, #fff5f5);
+            color: var(--maroon);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            border: 1px solid rgba(128, 0, 0, 0.1);
+        }
+
+        .btn-verify:hover {
+            background: var(--maroon);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .text-success { color: var(--success); }
+        .text-4xl { font-size: 36px; }
+        .mb-4 { margin-bottom: 16px; }
 
         /* SPECIAL STATES */
         .sc-icon-circle.danger-tint {
@@ -308,6 +331,61 @@
         .sc-number.danger-text {
             color: #dc2626;
         }
+
+        /* ALERTS SECTION */
+        .alerts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .alert-card {
+            background: white;
+            border-radius: 18px;
+            padding: 18px 22px;
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: all 0.3s;
+        }
+
+        .alert-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+
+        .alert-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .alert-expired .alert-icon { background: rgba(220, 38, 38, 0.1); color: #dc2626; }
+        .alert-warning .alert-icon { background: rgba(217, 119, 6, 0.1); color: #d97706; }
+
+        .alert-details { flex: 1; }
+        .alert-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .alert-type { font-size: 10px; font-weight: 850; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+        
+        .alert-badge {
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .alert-expired .alert-badge { background: #fee2e2; color: #dc2626; }
+        .alert-warning .alert-badge { background: #fef3c7; color: #d97706; }
+
+        .alert-item { font-size: 15px; font-weight: 850; color: var(--text-main); margin-bottom: 2px; }
+        .alert-date { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+        .alert-countdown { font-weight: 800; }
+        .alert-expired .alert-countdown { color: #dc2626; }
+        .alert-warning .alert-countdown { color: #d97706; }
 
         .fade-up {
             animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;

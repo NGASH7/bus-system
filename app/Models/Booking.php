@@ -41,4 +41,9 @@ class Booking extends Model
     {
         return $this->belongsTo(Bus::class);
     }
+
+    public function receipt()
+    {
+        return $this->hasOne(Receipt::class);
+    }
 }

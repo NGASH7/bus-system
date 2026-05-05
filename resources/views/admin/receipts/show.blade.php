@@ -8,6 +8,14 @@
                     <i class="fas fa-arrow-left mr-2"></i> Back to History
                 </a>
                 <div class="flex gap-4">
+                    @if($receipt->booking_id)
+                    <form action="{{ route('admin.receipts.send', $receipt->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn-send-client">
+                            <i class="fas fa-paper-plane mr-2"></i> Send to User
+                        </button>
+                    </form>
+                    @endif
                     <button onclick="window.print()" class="btn-print">
                         <i class="fas fa-print mr-2"></i> Print
                     </button>
@@ -266,6 +274,24 @@
         .btn-share:hover {
             background: #008211ff;
             transform: translateY(-2px);
+        }
+
+        .btn-send-client {
+            background: var(--gold);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(201, 168, 76, 0.2);
+        }
+
+        .btn-send-client:hover {
+            background: #b6963f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(201, 168, 76, 0.3);
         }
 
         .btn-back {

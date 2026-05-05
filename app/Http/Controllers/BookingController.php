@@ -84,4 +84,34 @@ class BookingController extends Controller
 
         return back()->with('success', 'You have accepted the counter-offer. Your booking is now confirmed!');
     }
+
+    /**
+     * Display the receipt for a specific booking.
+     */
+    public function showReceipt(Booking $booking)
+    {
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $receipt = \App\Models\Receipt::where('booking_id', $booking->id)->first();
+
+        if (!$receipt) {
+            return back()->with('error', 'No receipt has been generated for this booking yet.');
+        }
+
+        return view('admin.receipts.show', compact('receipt'));
+    }
+
+    /**
+     * Display a listing of the user's receipts.
+     */
+    public function indexReceipts()
+    {
+        $receipts = \App\Models\Receipt::whereHas('booking', function ($query) {
+            $query->where('user_id', Auth::id());
+        })->orderBy('receipt_date', 'desc')->get();
+
+        return view('receipts.index', compact('receipts'));
+    }
 }

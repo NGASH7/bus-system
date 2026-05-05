@@ -56,6 +56,7 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
     // Admin Routes
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+        Route::get('/logs', [AdminController::class, 'logs'])->name('logs');
 
         // Bus Management
         Route::get('buses/{bus}', [AdminBusController::class, 'show'])
@@ -69,16 +70,22 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
         // Analytics
         Route::get('analytics', [\App\Http\Controllers\AdminAnalyticsController::class, 'index'])->name('analytics.index');
 
+        // License Management
+        Route::resource('licenses', \App\Http\Controllers\AdminLicenseController::class);
+
         // Bookings Management
         Route::post('bookings/{booking}/accept', [AdminBookingController::class, 'accept'])->name('bookings.accept');
         Route::post('bookings/{booking}/reject', [AdminBookingController::class, 'reject'])->name('bookings.reject');
         Route::post('bookings/{booking}/counter', [AdminBookingController::class, 'counter'])->name('bookings.counter');
+        Route::get('bookings/history', [AdminBookingController::class, 'history'])->name('bookings.history');
         Route::resource('bookings', AdminBookingController::class)->only(['index', 'show']);
 
         // Schedule
         Route::get('schedule', [AdminScheduleController::class, 'index'])->name('schedule.index');
 
         // Receipts Management
+        Route::get('receipts/system', [\App\Http\Controllers\AdminReceiptController::class, 'systemIndex'])->name('receipts.system');
+        Route::post('receipts/{receipt}/send', [\App\Http\Controllers\AdminReceiptController::class, 'send'])->name('receipts.send');
         Route::resource('receipts', \App\Http\Controllers\AdminReceiptController::class);
 
         // Insurance Management
@@ -95,6 +102,8 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::post('/bookings/{booking}/accept', [BookingController::class, 'acceptCounter'])->name('bookings.accept-counter');
+    Route::get('/receipts', [BookingController::class, 'indexReceipts'])->name('receipts.index');
+    Route::get('/receipts/{booking}', [BookingController::class, 'showReceipt'])->name('receipts.view');
 
     // Driver Routes
     Route::middleware('role:driver')->group(function () {

@@ -122,9 +122,20 @@
                                     <div class="action-footer bg-success">
                                         <div class="action-icon-large text-green"><i class="fas fa-check-shield"></i></div>
                                         <div class="action-content">
-                                            <p class="action-title text-green">Reservation Confirmed</p>
                                             <p class="action-note text-green-dark">Your trip is locked in the master schedule.
                                                 You have secured the vehicle for this journey.</p>
+                                            
+                                            @php
+                                                $hasReceipt = \App\Models\Receipt::where('booking_id', $booking->id)->exists();
+                                            @endphp
+                                            
+                                            @if($hasReceipt)
+                                            <div class="mt-4">
+                                                <a href="{{ route('receipts.view', $booking->id) }}" class="btn-view-receipt">
+                                                    <i class="fas fa-file-invoice mr-2"></i> View Official Receipt
+                                                </a>
+                                            </div>
+                                            @endif
                                         </div>
                                     </div>
                                     @if($booking->bus && $booking->bus->driver)
@@ -799,6 +810,26 @@
             background: black;
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-view-receipt {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: #15803d;
+            color: white;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);
+        }
+
+        .btn-view-receipt:hover {
+            background: #166534;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(21, 128, 61, 0.3);
         }
 
         .btn-maroon {

@@ -12,6 +12,7 @@ class AdminScheduleController extends Controller
         // Only show accepted/confirmed bookings on the schedule
         $bookings = Booking::with(['user', 'bus'])
             ->where('status', 'accepted')
+            ->where('date', '>=', now()->startOfDay())
             ->orderBy('date')
             ->orderBy('pickup_time')
             ->get()

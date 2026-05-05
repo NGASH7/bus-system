@@ -18,10 +18,16 @@ class Receipt extends Model
         'amount',
         'payment_method',
         'receipt_date',
+        'booking_id',
     ];
 
     protected $casts = [
         'receipt_date' => 'date',
         'amount' => 'decimal:2',
     ];
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class);
+    }
 }

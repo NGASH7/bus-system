@@ -6,6 +6,9 @@
                 <p class="admin-page-subtitle">Manage fleet reservations and negotiate offers.</p>
             </div>
             <div class="admin-actions">
+                <a href="{{ route('admin.bookings.history') }}" class="btn-outline-gold mr-3">
+                    <i class="fas fa-history"></i> Booking History
+                </a>
                 <a href="{{ route('admin.schedule.index') }}" class="btn-outline-maroon">
                     <i class="fas fa-calendar-alt"></i> View Master Schedule
                 </a>
@@ -151,6 +154,35 @@
             color: #111827;
             transform: translateY(-1px);
         }
+
+        .btn-outline-gold {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .btn-outline-gold i {
+            color: var(--gold);
+        }
+
+        .btn-outline-gold:hover {
+            background: #fcf8eb;
+            border-color: var(--gold);
+            color: #111827;
+            transform: translateY(-1px);
+        }
+
+        .mr-3 { margin-right: 12px; }
 
         .alert-success {
             background: #f0fdf4;
