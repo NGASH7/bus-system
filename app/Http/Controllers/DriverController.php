@@ -160,4 +160,38 @@ class DriverController extends Controller
             'insuranceExpiryStatus'
         ));
     }
+
+    /**
+     * Display the driver's vehicle inspection details (read-only).
+     */
+    public function inspection()
+    {
+        $driver = Auth::user();
+        $bus = Bus::where('driver_id', $driver->id)->first();
+
+        $inspectionDaysLeft = null;
+        $inspectionExpiryStatus = 'none';
+
+        if ($bus && $bus->inspection_expiry) {
+            $expiry = Carbon::parse($bus->inspection_expiry)->startOfDay();
+            $inspectionDaysLeft = (int) now()->startOfDay()->diffInDays($expiry, false);
+
+            if ($inspectionDaysLeft < 0) {
+                $inspectionExpiryStatus = 'expired';
+            } elseif ($inspectionDaysLeft <= 7) {
+                $inspectionExpiryStatus = 'critical';
+            } elseif ($inspectionDaysLeft <= 30) {
+                $inspectionExpiryStatus = 'warning';
+            } else {
+                $inspectionExpiryStatus = 'ok';
+            }
+        }
+
+        return view('driver.inspection', compact(
+            'driver',
+            'bus',
+            'inspectionDaysLeft',
+            'inspectionExpiryStatus'
+        ));
+    }
 }

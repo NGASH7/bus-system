@@ -104,10 +104,12 @@ class AdminReceiptController extends Controller
      */
     public function send(Receipt $receipt)
     {
-        // Here you would trigger an email or SMS to the user
-        // Mail::to($receipt->booking->user->email)->send(new ReceiptMail($receipt));
+        if ($receipt->customer_phone) {
+            $message = "Payment Confirmed! Receipt #{$receipt->receipt_no} for KES " . number_format($receipt->amount, 0) . " has been generated. Thank you for choosing Mwigito Excel.";
+            app(\App\Services\CelcomSmsService::class)->send($receipt->customer_phone, $message);
+        }
         
-        return redirect()->back()->with('success', 'Receipt has been sent to ' . $receipt->customer_name . ' successfully.');
+        return redirect()->back()->with('success', 'Receipt has been sent to ' . $receipt->customer_name . ' via SMS successfully.');
     }
 
     /**

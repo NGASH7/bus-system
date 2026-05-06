@@ -282,6 +282,9 @@
                 <a href="{{ route('admin.licenses.index') }}" class="nav-item {{ request()->routeIs('admin.licenses.*') ? 'active' : '' }}">
                     <i class="fas fa-id-card"></i> Licenses
                 </a>
+                <a href="{{ route('admin.inspection.index') }}" class="nav-item {{ request()->routeIs('admin.inspection.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-check"></i> Inspection
+                </a>
                 <a href="{{ route('admin.schedule.index') }}" class="nav-item {{ request()->routeIs('admin.schedule.*') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i> Schedule
                 </a>

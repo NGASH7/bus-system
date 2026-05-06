@@ -24,7 +24,7 @@ class AdminDriverController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'phone_number' => 'nullable|string|max:20',
+            'phone_number' => 'required|string|max:20',
             'license_number' => 'nullable|string|max:50',
             'license_expiry' => 'nullable|date',
             'national_id' => 'nullable|string|max:50',
@@ -55,7 +55,7 @@ class AdminDriverController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $driver->id,
-            'phone_number' => 'nullable|string|max:20',
+            'phone_number' => 'required|string|max:20',
             'license_number' => 'nullable|string|max:50',
             'license_expiry' => 'nullable|date',
             'national_id' => 'nullable|string|max:50',

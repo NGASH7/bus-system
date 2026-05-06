@@ -40,6 +40,12 @@ class AdminBookingController extends Controller
         $booking->update([
             'status' => 'accepted'
         ]);
+
+        // Notify User
+        if ($booking->user && $booking->user->phone_number) {
+            $msg = "Congratulations! Your booking #{$booking->id} for {$booking->destination} has been ACCEPTED. Thank you for choosing Mwigito Excel.";
+            app(\App\Services\CelcomSmsService::class)->send($booking->user->phone_number, $msg);
+        }
         
         // Redirect to receipt generation with pre-filled data
         return redirect()->route('admin.receipts.create', ['booking_id' => $booking->id])
@@ -65,6 +71,12 @@ class AdminBookingController extends Controller
             'counter_price' => $request->counter_price,
             'status' => 'countered'
         ]);
+
+        // Notify User
+        if ($booking->user && $booking->user->phone_number) {
+            $msg = "Review Needed: Mwigito Excel has sent a counter-offer for Booking #{$booking->id}. New price: KES " . number_format($request->counter_price, 0) . ". Check your history to accept.";
+            app(\App\Services\CelcomSmsService::class)->send($booking->user->phone_number, $msg);
+        }
 
         return redirect()->route('admin.bookings.show', $booking->id)->with('success', 'Counter-offer has been sent to the user.');
     }

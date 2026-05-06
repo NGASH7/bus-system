@@ -48,6 +48,23 @@ class BookingController extends Controller
             'amount' => $validated['offered_price'],
         ]));
 
+        $booking->load(['bus.driver']);
+
+        $message = "New Booking Request! Booking #{$booking->id} for {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ". Client offer: KES " . number_format($booking->amount, 0) . ".";
+
+        // Notify Admins
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            if ($admin->phone_number) {
+                app(\App\Services\CelcomSmsService::class)->send($admin->phone_number, $message);
+            }
+        }
+
+        // Notify Driver
+        if ($booking->bus && $booking->bus->driver && $booking->bus->driver->phone_number) {
+            app(\App\Services\CelcomSmsService::class)->send($booking->bus->driver->phone_number, "New trip assigned: Booking #{$booking->id} to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ".");
+        }
+
         return redirect()->route('dashboard')->with('success', 'Your booking request has been submitted. The admin will review your offer shortly.');
     }
 

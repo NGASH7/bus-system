@@ -33,18 +33,26 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone_number' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone_number' => $request->phone_number,
             'password' => Hash::make($request->password),
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
+
+        // Send Welcome SMS
+        if ($user->phone_number) {
+            $welcomeMessage = "Welcome to Mwigito Excel, {$user->name}! Your account has been successfully created. Book your next trip with us today.";
+            app(\App\Services\CelcomSmsService::class)->send($user->phone_number, $welcomeMessage);
+        }
 
         return redirect(route('dashboard', absolute: false));
     }
