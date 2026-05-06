@@ -81,16 +81,30 @@ class AdminController extends Controller
                 ];
             });
 
-        $busLicenseAlerts = Bus::where('license_expiry', '<=', $warningDate)
+        $roadLicenseAlerts = Bus::where('license_expiry', '<=', $warningDate)
             ->get()
             ->map(function($bus) use ($today) {
                 $status = $bus->license_expiry < $today ? 'Expired' : 'Expiring Soon';
                 return [
-                    'type' => 'Inspection',
+                    'type' => 'Road License',
                     'item' => $bus->plate_number,
                     'expiry' => $bus->license_expiry,
                     'status' => $status,
                     'days' => $today->diffInDays($bus->license_expiry, false),
+                    'icon' => 'fas fa-id-card'
+                ];
+            });
+
+        $inspectionAlerts = Bus::where('inspection_expiry', '<=', $warningDate)
+            ->get()
+            ->map(function($bus) use ($today) {
+                $status = $bus->inspection_expiry < $today ? 'Expired' : 'Expiring Soon';
+                return [
+                    'type' => 'Inspection',
+                    'item' => $bus->plate_number,
+                    'expiry' => $bus->inspection_expiry,
+                    'status' => $status,
+                    'days' => $today->diffInDays($bus->inspection_expiry, false),
                     'icon' => 'fas fa-clipboard-check'
                 ];
             });
@@ -106,13 +120,14 @@ class AdminController extends Controller
                     'expiry' => $driver->license_expiry,
                     'status' => $status,
                     'days' => $today->diffInDays($driver->license_expiry, false),
-                    'icon' => 'fas fa-id-card'
+                    'icon' => 'fas fa-id-card-clip'
                 ];
             });
 
         $alerts = collect()
             ->concat($insuranceAlerts)
-            ->concat($busLicenseAlerts)
+            ->concat($roadLicenseAlerts)
+            ->concat($inspectionAlerts)
             ->concat($driverLicenseAlerts)
             ->map(function($alert) use ($today) {
                 $expiry = $alert['expiry'];
@@ -126,6 +141,12 @@ class AdminController extends Controller
                 
                 $alert['countdown_text'] = $text;
                 $alert['sort_days'] = $today->diffInDays($expiry, false);
+                
+                // Set critical status if expiring within 7 days
+                if ($alert['sort_days'] >= 0 && $alert['sort_days'] <= 7) {
+                    $alert['status'] = 'Critical';
+                }
+                
                 return $alert;
             })
             ->sortBy('sort_days');

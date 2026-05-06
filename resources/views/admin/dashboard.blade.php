@@ -46,7 +46,7 @@
                 
                 <div class="alerts-grid">
                     @foreach($alerts as $alert)
-                        <div class="alert-card {{ $alert['status'] == 'Expired' ? 'alert-expired' : 'alert-warning' }}">
+                        <div class="alert-card {{ $alert['status'] == 'Expired' ? 'alert-expired' : ($alert['status'] == 'Critical' ? 'alert-critical' : 'alert-warning') }}">
                             <div class="alert-icon">
                                 <i class="{{ $alert['icon'] }}"></i>
                             </div>
@@ -364,6 +364,7 @@
         }
 
         .alert-expired .alert-icon { background: rgba(220, 38, 38, 0.1); color: #dc2626; }
+        .alert-critical .alert-icon { background: rgba(234, 88, 12, 0.1); color: #ea580c; }
         .alert-warning .alert-icon { background: rgba(217, 119, 6, 0.1); color: #d97706; }
 
         .alert-details { flex: 1; }
@@ -379,12 +380,14 @@
         }
 
         .alert-expired .alert-badge { background: #fee2e2; color: #dc2626; }
+        .alert-critical .alert-badge { background: #ffedd5; color: #ea580c; }
         .alert-warning .alert-badge { background: #fef3c7; color: #d97706; }
 
         .alert-item { font-size: 15px; font-weight: 850; color: var(--text-main); margin-bottom: 2px; }
         .alert-date { font-size: 12px; color: var(--text-muted); font-weight: 600; }
         .alert-countdown { font-weight: 800; }
         .alert-expired .alert-countdown { color: #dc2626; }
+        .alert-critical .alert-countdown { color: #ea580c; }
         .alert-warning .alert-countdown { color: #d97706; }
 
         .fade-up {

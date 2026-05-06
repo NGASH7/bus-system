@@ -30,6 +30,13 @@ class BookingController extends Controller
         return view('bookings.create', compact('buses', 'selectedBus', 'prefill'));
     }
 
+    protected $smsService;
+
+    public function __construct(\App\Services\CelcomSmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
+
     /**
      * Store a new booking request.
      */
@@ -53,12 +60,43 @@ class BookingController extends Controller
             'status' => 'pending',
             'amount' => $validated['offered_price'],
         ]));
+
         SystemActivity::record(
             'booking.created',
             Auth::user()->name . " created booking #{$booking->id} for {$booking->destination}.",
             Auth::user(),
             ['booking_id' => $booking->id, 'bus_id' => $booking->bus_id]
         );
+
+        // Notify Admin and Driver
+        $message = "New Booking Request #{$booking->id} from " . Auth::user()->name . " for {$booking->destination} on " . $booking->date->format('d M, Y') . ". Check dashboard to review.";
+        
+        // Notify Admins
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            if ($admin->phone_number) {
+                $this->smsService->send($admin->phone_number, $message);
+            }
+            if ($admin->email) {
+                \Illuminate\Support\Facades\Mail::raw($message, function ($mail) use ($admin) {
+                    $mail->to($admin->email)->subject("New Booking Request #" . $admin->id);
+                });
+            }
+        }
+
+        // Notify Driver
+        if ($booking->bus && $booking->bus->driver) {
+            $driver = $booking->bus->driver;
+            $driverMsg = "New trip assigned: Booking #{$booking->id} to {$booking->destination} on " . $booking->date->format('d M, Y') . ".";
+            if ($driver->phone_number) {
+                $this->smsService->send($driver->phone_number, $driverMsg);
+            }
+            if ($driver->email) {
+                \Illuminate\Support\Facades\Mail::raw($driverMsg, function ($mail) use ($driver) {
+                    $mail->to($driver->email)->subject("New Trip Assignment");
+                });
+            }
+        }
 
         return redirect()->route('dashboard')->with('success', 'Your booking request has been submitted. The admin will review your offer shortly.');
     }

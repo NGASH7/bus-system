@@ -227,8 +227,11 @@
                     class="nav-item {{ request()->routeIs('driver.license') ? 'active' : '' }}">
                     <i class="fas fa-id-card"></i> My License
                 </a>
-                <a href="{{ route('driver.insurance') }}" class="nav-item">
+                <a href="{{ route('driver.insurance') }}" class="nav-item {{ request()->routeIs('driver.insurance') ? 'active' : '' }}">
                     <i class="fas fa-shield-alt"></i> Insurance
+                </a>
+                <a href="{{ route('driver.inspection') }}" class="nav-item {{ request()->routeIs('driver.inspection') ? 'active' : '' }}">
+                    <i class="fas fa-check-double"></i> Inspection
                 </a>
                 <a href="{{ route('driver.bus-service.index') }}" class="nav-item {{ request()->routeIs('driver.bus-service.index') ? 'active' : '' }}">
                     <i class="fas fa-screwdriver-wrench"></i> Bus Service
