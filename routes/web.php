@@ -88,8 +88,9 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
         Route::post('receipts/{receipt}/send', [\App\Http\Controllers\AdminReceiptController::class, 'send'])->name('receipts.send');
         Route::resource('receipts', \App\Http\Controllers\AdminReceiptController::class);
 
-        // Insurance Management
+        // Insurance & Inspection Management
         Route::resource('insurance', \App\Http\Controllers\AdminInsuranceController::class);
+        Route::resource('inspection', \App\Http\Controllers\AdminInspectionController::class);
 
         // Billing & Bus Services
         Route::get('billing', [\App\Http\Controllers\BusServiceController::class, 'adminIndex'])->name('billing.index');
@@ -112,6 +113,7 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
         Route::get('/driver/history', [DriverController::class, 'history'])->name('driver.history');
         Route::get('/driver/license', [DriverController::class, 'license'])->name('driver.license');
         Route::get('/driver/insurance', [DriverController::class, 'insurance'])->name('driver.insurance');
+        Route::get('/driver/inspection', [DriverController::class, 'inspection'])->name('driver.inspection');
         
         // Bus Service
         Route::get('/driver/bus-service', [\App\Http\Controllers\BusServiceController::class, 'driverIndex'])->name('driver.bus-service.index');

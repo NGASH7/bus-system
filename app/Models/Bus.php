@@ -15,6 +15,8 @@ class Bus extends Model
         'capacity',
         'insurance_expiry',
         'license_expiry',
+        'inspection_expiry',
+        'inspection_certificate',
         'policy_number',
         'underwriter',
         'coverage_type',
@@ -35,5 +37,6 @@ class Bus extends Model
         'is_active' => 'boolean',
         'insurance_expiry' => 'date',
         'license_expiry' => 'date',
+        'inspection_expiry' => 'date',
     ];
 }
