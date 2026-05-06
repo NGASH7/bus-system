@@ -67,7 +67,7 @@
 
                         <div class="input-group">
                             <label><i class="fas fa-flag-checkered text-maroon"></i> Destination <span class="required">*</span></label>
-                                        <input type="text" name="destination" required placeholder="E.g., National Museum, Nairobi" value="{{ old('destination', $prefill['destination'] ?? '') }}" class="premium-input border-focus">
+                            <input type="text" name="destination" required placeholder="E.g., National Museum, Nairobi" class="premium-input border-focus">
                         </div>
                     </div>
 
@@ -80,11 +80,11 @@
                                 <div class="time-grid">
                                     <div class="input-group">
                                         <label>Date <span class="required">*</span></label>
-                                        <input type="date" name="date" required min="{{ date('Y-m-d') }}" value="{{ old('date', $prefill['date'] ?? '') }}" class="premium-input bg-gray">
+                                        <input type="date" name="date" required min="{{ date('Y-m-d') }}" class="premium-input bg-gray">
                                     </div>
                                     <div class="input-group">
                                         <label>Time <span class="required">*</span></label>
-                                        <input type="time" name="pickup_time" required value="{{ old('pickup_time', $prefill['pickup_time'] ?? '') }}" class="premium-input bg-gray">
+                                        <input type="time" name="pickup_time" required class="premium-input bg-gray">
                                     </div>
                                 </div>
                             </div>

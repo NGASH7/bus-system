@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Bus;
-use App\Support\SystemActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,13 +20,8 @@ class BookingController extends Controller
         }
         
         $buses = Bus::where('is_active', true)->get();
-        $prefill = [
-            'destination' => $request->input('destination'),
-            'date' => $request->input('date'),
-            'pickup_time' => $request->input('pickup_time'),
-        ];
         
-        return view('bookings.create', compact('buses', 'selectedBus', 'prefill'));
+        return view('bookings.create', compact('buses', 'selectedBus'));
     }
 
     /**
@@ -53,12 +47,6 @@ class BookingController extends Controller
             'status' => 'pending',
             'amount' => $validated['offered_price'],
         ]));
-        SystemActivity::record(
-            'booking.created',
-            Auth::user()->name . " created booking #{$booking->id} for {$booking->destination}.",
-            Auth::user(),
-            ['booking_id' => $booking->id, 'bus_id' => $booking->bus_id]
-        );
 
         return redirect()->route('dashboard')->with('success', 'Your booking request has been submitted. The admin will review your offer shortly.');
     }
@@ -93,13 +81,37 @@ class BookingController extends Controller
             'status' => 'accepted',
             'offered_price' => $booking->counter_price // Formalize the new price
         ]);
-        SystemActivity::record(
-            'booking.counter.accepted',
-            Auth::user()->name . " accepted counter-offer for booking #{$booking->id}.",
-            Auth::user(),
-            ['booking_id' => $booking->id]
-        );
 
         return back()->with('success', 'You have accepted the counter-offer. Your booking is now confirmed!');
+    }
+
+    /**
+     * Display the receipt for a specific booking.
+     */
+    public function showReceipt(Booking $booking)
+    {
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $receipt = \App\Models\Receipt::where('booking_id', $booking->id)->first();
+
+        if (!$receipt) {
+            return back()->with('error', 'No receipt has been generated for this booking yet.');
+        }
+
+        return view('admin.receipts.show', compact('receipt'));
+    }
+
+    /**
+     * Display a listing of the user's receipts.
+     */
+    public function indexReceipts()
+    {
+        $receipts = \App\Models\Receipt::whereHas('booking', function ($query) {
+            $query->where('user_id', Auth::id());
+        })->orderBy('receipt_date', 'desc')->get();
+
+        return view('receipts.index', compact('receipts'));
     }
 }

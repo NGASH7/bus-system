@@ -1196,7 +1196,7 @@
     <nav class="navbar">
         <div class="nav-inner">
             <a href="/" class="nav-logo">
-                <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Logo"
+                <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Bus System" title="Mwigito Excel Bus System"
                     style="height: 50px; width: auto; object-fit: contain;">
                 <div class="nav-logo-text">
                     <div class="school">Mwigito Excel</div>
@@ -1211,7 +1211,7 @@
                     <i class="fas fa-key"></i><span>I'm a Renter</span>
                 </a>
                 <a href="{{ route('login') }}" class="btn-login">
-                    <i class="fas fa-shield-alt"></i> Driver / Admin Login <i class="fas fa-arrow-right"></i>
+                    <i class="fas fa-sign-in-alt"></i> Login <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>
@@ -1274,7 +1274,7 @@
                     <li><i class="fas fa-check-circle purple"></i> Get instant price quote</li>
                     <li><i class="fas fa-check-circle purple"></i> Book driver and bus</li>
                 </ul>
-                <a href="#quick-actions" class="btn-service purple" style="width: 100%; justify-content: center;">Rent a
+                <a href="{{ route('bookings.create') }}" class="btn-service purple" style="width: 100%; justify-content: center;">Rent a
                     bus <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
@@ -1314,15 +1314,25 @@
                         </button>
                         <p class="qa-note"><i class="fas fa-tag" style="color:#5a1a9a;"></i> Check availability and get
                             instant pricing.</p>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
+                            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600;">To book our bus, please:</p>
+                            <div style="display: flex; gap: 10px;">
+                                <a href="{{ route('register') }}" class="btn-qa purple" style="text-decoration: none; padding: 8px 15px; font-size: 12px; flex: 1;">
+                                    <i class="fas fa-user-plus"></i> Register
+                                </a>
+                                <a href="{{ route('login') }}" class="btn-qa maroon" style="text-decoration: none; padding: 8px 15px; font-size: 12px; flex: 1;">
+                                    <i class="fas fa-sign-in-alt"></i> Login
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Driver/Admin -->
+                <!-- Member Login -->
                 <div class="quick-action-panel">
-                    <div class="qa-icon">🛡️</div>
-                    <div class="qa-title maroon">I'm a Driver / Admin</div>
-                    <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:14px; line-height:1.6;">Login to
-                        access your dashboard, view your shifts, routes and updates.</p>
+                    <div class="qa-icon">🔐</div>
+                    <div class="qa-title maroon">Member Login</div>
+                    <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:14px; line-height:1.6;">Access your personalized dashboard to manage bookings, view shifts, or check fleet status.</p>
                     <a href="{{ route('login') }}" class="btn-qa maroon"
                         style="text-decoration:none; margin-bottom:8px;">
                         <i class="fas fa-sign-in-alt"></i> Login to Dashboard
@@ -1444,7 +1454,7 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <div class="logo" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                        <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Logo"
+                        <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Bus System" title="Mwigito Excel Bus System"
                             style="height: 45px; width: auto; object-fit: contain;">
                         <div class="name"
                             style="font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 800; color: white;">
