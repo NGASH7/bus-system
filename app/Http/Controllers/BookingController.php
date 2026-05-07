@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Bus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {
@@ -58,11 +59,32 @@ class BookingController extends Controller
             if ($admin->phone_number) {
                 app(\App\Services\CelcomSmsService::class)->send($admin->phone_number, $message);
             }
+            if ($admin->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw($message, function ($mail) use ($admin) {
+                        $mail->to($admin->email)->subject('Mwigito Excel: New Booking Request');
+                    });
+                } catch (\Exception $e) {
+                    Log::error("Failed to send booking email to admin {$admin->email}: " . $e->getMessage());
+                }
+            }
         }
 
         // Notify Driver
-        if ($booking->bus && $booking->bus->driver && $booking->bus->driver->phone_number) {
-            app(\App\Services\CelcomSmsService::class)->send($booking->bus->driver->phone_number, "New trip assigned: Booking #{$booking->id} to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ".");
+        if ($booking->bus && $booking->bus->driver) {
+            $driverMsg = "New trip assigned: Booking #{$booking->id} to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ".";
+            if ($booking->bus->driver->phone_number) {
+                app(\App\Services\CelcomSmsService::class)->send($booking->bus->driver->phone_number, $driverMsg);
+            }
+            if ($booking->bus->driver->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw($driverMsg, function ($mail) use ($booking) {
+                        $mail->to($booking->bus->driver->email)->subject('Mwigito Excel: New Trip Assignment');
+                    });
+                } catch (\Exception $e) {
+                    Log::error("Failed to send booking assignment email to driver {$booking->bus->driver->email}: " . $e->getMessage());
+                }
+            }
         }
 
         return redirect()->route('dashboard')->with('success', 'Your booking request has been submitted. The admin will review your offer shortly.');
@@ -98,6 +120,25 @@ class BookingController extends Controller
             'status' => 'accepted',
             'offered_price' => $booking->counter_price // Formalize the new price
         ]);
+
+        $booking->load(['bus.driver']);
+
+        // Notify Driver that counter was accepted
+        if ($booking->bus && $booking->bus->driver) {
+            $driverMsg = "Trip Confirmed! Booking #{$booking->id} to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . " has been finalized by the client.";
+            if ($booking->bus->driver->phone_number) {
+                app(\App\Services\CelcomSmsService::class)->send($booking->bus->driver->phone_number, $driverMsg);
+            }
+            if ($booking->bus->driver->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw($driverMsg, function ($mail) use ($booking) {
+                        $mail->to($booking->bus->driver->email)->subject('Mwigito Excel: Trip Confirmed');
+                    });
+                } catch (\Exception $e) {
+                    Log::error("Failed to send trip confirmed email to driver {$booking->bus->driver->email}: " . $e->getMessage());
+                }
+            }
+        }
 
         return back()->with('success', 'You have accepted the counter-offer. Your booking is now confirmed!');
     }

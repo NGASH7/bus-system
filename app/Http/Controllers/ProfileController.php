@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -26,13 +27,38 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $user->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        // Capture which attributes changed before saving
+        $changes = array_keys($user->getDirty());
+
+        $user->save();
+
+        if (!empty($changes)) {
+            $fieldsChanged = implode(', ', array_map('ucfirst', $changes));
+            $msg = "Security Alert: Your Mwigito Excel profile was recently updated. Changes made to: {$fieldsChanged}. If this wasn't you, contact support immediately.";
+            
+            // Send SMS
+            if ($user->phone_number) {
+                app(\App\Services\CelcomSmsService::class)->send($user->phone_number, $msg);
+            }
+            
+            // Send Email
+            if ($user->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw($msg, function ($mail) use ($user) {
+                        $mail->to($user->email)->subject('Mwigito Excel: Profile Update Alert');
+                    });
+                } catch (\Exception $e) {
+                    Log::error("Failed to send profile update email to {$user->email}: " . $e->getMessage());
+                }
+            }
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

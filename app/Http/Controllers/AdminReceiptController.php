@@ -10,6 +10,7 @@ use App\Models\Receipt;
 use App\Models\Bus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class AdminReceiptController extends Controller
 {
@@ -104,12 +105,25 @@ class AdminReceiptController extends Controller
      */
     public function send(Receipt $receipt)
     {
+        $message = "Payment Confirmed! Receipt #{$receipt->receipt_no} for KES " . number_format($receipt->amount, 0) . " has been generated. Thank you for choosing Mwigito Excel.";
+        
         if ($receipt->customer_phone) {
-            $message = "Payment Confirmed! Receipt #{$receipt->receipt_no} for KES " . number_format($receipt->amount, 0) . " has been generated. Thank you for choosing Mwigito Excel.";
             app(\App\Services\CelcomSmsService::class)->send($receipt->customer_phone, $message);
         }
+
+        // Send Email if we can get it via booking
+        $receipt->load('booking.user');
+        if ($receipt->booking && $receipt->booking->user && $receipt->booking->user->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::raw($message, function ($mail) use ($receipt) {
+                    $mail->to($receipt->booking->user->email)->subject('Mwigito Excel: Payment Confirmed');
+                });
+            } catch (\Exception $e) {
+                Log::error("Failed to send receipt email to {$receipt->booking->user->email}: " . $e->getMessage());
+            }
+        }
         
-        return redirect()->back()->with('success', 'Receipt has been sent to ' . $receipt->customer_name . ' via SMS successfully.');
+        return redirect()->back()->with('success', 'Receipt has been sent to ' . $receipt->customer_name . ' via SMS & Email successfully.');
     }
 
     /**
