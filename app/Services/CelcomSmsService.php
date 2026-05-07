@@ -42,7 +42,7 @@ class CelcomSmsService
             ]);
 
             if ($response->successful()) {
-                Log::info("SMS sent successfully to {$to}");
+                Log::info("SMS API Response for {$to}: " . $response->body());
                 return true;
             }
 

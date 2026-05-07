@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Bus;
-use App\Support\SystemActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {
@@ -21,20 +21,8 @@ class BookingController extends Controller
         }
         
         $buses = Bus::where('is_active', true)->get();
-        $prefill = [
-            'destination' => $request->input('destination'),
-            'date' => $request->input('date'),
-            'pickup_time' => $request->input('pickup_time'),
-        ];
         
-        return view('bookings.create', compact('buses', 'selectedBus', 'prefill'));
-    }
-
-    protected $smsService;
-
-    public function __construct(\App\Services\CelcomSmsService $smsService)
-    {
-        $this->smsService = $smsService;
+        return view('bookings.create', compact('buses', 'selectedBus'));
     }
 
     /**
@@ -61,40 +49,41 @@ class BookingController extends Controller
             'amount' => $validated['offered_price'],
         ]));
 
-        SystemActivity::record(
-            'booking.created',
-            Auth::user()->name . " created booking #{$booking->id} for {$booking->destination}.",
-            Auth::user(),
-            ['booking_id' => $booking->id, 'bus_id' => $booking->bus_id]
-        );
+        $booking->load(['bus.driver']);
 
-        // Notify Admin and Driver
-        $message = "New Booking Request #{$booking->id} from " . Auth::user()->name . " for {$booking->destination} on " . $booking->date->format('d M, Y') . ". Check dashboard to review.";
-        
+        $message = "New Booking Request! Booking #{$booking->id} for {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ". Client offer: KES " . number_format($booking->amount, 0) . ".";
+
         // Notify Admins
         $admins = \App\Models\User::where('role', 'admin')->get();
         foreach ($admins as $admin) {
             if ($admin->phone_number) {
-                $this->smsService->send($admin->phone_number, $message);
+                app(\App\Services\CelcomSmsService::class)->send($admin->phone_number, $message);
             }
             if ($admin->email) {
-                \Illuminate\Support\Facades\Mail::raw($message, function ($mail) use ($admin) {
-                    $mail->to($admin->email)->subject("New Booking Request #" . $admin->id);
-                });
+                try {
+                    \Illuminate\Support\Facades\Mail::raw($message, function ($mail) use ($admin) {
+                        $mail->to($admin->email)->subject('Mwigito Excel: New Booking Request');
+                    });
+                } catch (\Exception $e) {
+                    Log::error("Failed to send booking email to admin {$admin->email}: " . $e->getMessage());
+                }
             }
         }
 
         // Notify Driver
         if ($booking->bus && $booking->bus->driver) {
-            $driver = $booking->bus->driver;
-            $driverMsg = "New trip assigned: Booking #{$booking->id} to {$booking->destination} on " . $booking->date->format('d M, Y') . ".";
-            if ($driver->phone_number) {
-                $this->smsService->send($driver->phone_number, $driverMsg);
+            $driverMsg = "New trip assigned: Booking #{$booking->id} to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ".";
+            if ($booking->bus->driver->phone_number) {
+                app(\App\Services\CelcomSmsService::class)->send($booking->bus->driver->phone_number, $driverMsg);
             }
-            if ($driver->email) {
-                \Illuminate\Support\Facades\Mail::raw($driverMsg, function ($mail) use ($driver) {
-                    $mail->to($driver->email)->subject("New Trip Assignment");
-                });
+            if ($booking->bus->driver->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw($driverMsg, function ($mail) use ($booking) {
+                        $mail->to($booking->bus->driver->email)->subject('Mwigito Excel: New Trip Assignment');
+                    });
+                } catch (\Exception $e) {
+                    Log::error("Failed to send booking assignment email to driver {$booking->bus->driver->email}: " . $e->getMessage());
+                }
             }
         }
 
@@ -131,13 +120,56 @@ class BookingController extends Controller
             'status' => 'accepted',
             'offered_price' => $booking->counter_price // Formalize the new price
         ]);
-        SystemActivity::record(
-            'booking.counter.accepted',
-            Auth::user()->name . " accepted counter-offer for booking #{$booking->id}.",
-            Auth::user(),
-            ['booking_id' => $booking->id]
-        );
+
+        $booking->load(['bus.driver']);
+
+        // Notify Driver that counter was accepted
+        if ($booking->bus && $booking->bus->driver) {
+            $driverMsg = "Trip Confirmed! Booking #{$booking->id} to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . " has been finalized by the client.";
+            if ($booking->bus->driver->phone_number) {
+                app(\App\Services\CelcomSmsService::class)->send($booking->bus->driver->phone_number, $driverMsg);
+            }
+            if ($booking->bus->driver->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw($driverMsg, function ($mail) use ($booking) {
+                        $mail->to($booking->bus->driver->email)->subject('Mwigito Excel: Trip Confirmed');
+                    });
+                } catch (\Exception $e) {
+                    Log::error("Failed to send trip confirmed email to driver {$booking->bus->driver->email}: " . $e->getMessage());
+                }
+            }
+        }
 
         return back()->with('success', 'You have accepted the counter-offer. Your booking is now confirmed!');
+    }
+
+    /**
+     * Display the receipt for a specific booking.
+     */
+    public function showReceipt(Booking $booking)
+    {
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $receipt = \App\Models\Receipt::where('booking_id', $booking->id)->first();
+
+        if (!$receipt) {
+            return back()->with('error', 'No receipt has been generated for this booking yet.');
+        }
+
+        return view('admin.receipts.show', compact('receipt'));
+    }
+
+    /**
+     * Display a listing of the user's receipts.
+     */
+    public function indexReceipts()
+    {
+        $receipts = \App\Models\Receipt::whereHas('booking', function ($query) {
+            $query->where('user_id', Auth::id());
+        })->orderBy('receipt_date', 'desc')->get();
+
+        return view('receipts.index', compact('receipts'));
     }
 }

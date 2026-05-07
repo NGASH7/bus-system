@@ -28,6 +28,19 @@
             @endif
         </div>
 
+        <!-- Phone Number -->
+        <div class="form-group">
+            <label for="phone_number" class="input-label">Phone Number</label>
+            <div class="input-wrapper">
+                <input id="phone_number" type="tel" name="phone_number" value="{{ old('phone_number') }}" required autocomplete="tel"
+                    class="auth-input" placeholder="e.g. 0712345678">
+                <i class="fas fa-phone"></i>
+            </div>
+            @if ($errors->has('phone_number'))
+                <p class="mt-1 text-xs text-red-600 font-semibold">{{ $errors->first('phone_number') }}</p>
+            @endif
+        </div>
+
         <!-- Password Grid -->
         <div class="grid-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div class="form-group">

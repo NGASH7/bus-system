@@ -162,7 +162,7 @@ class DriverController extends Controller
     }
 
     /**
-     * Display the driver's assigned bus inspection details.
+     * Display the driver's vehicle inspection details (read-only).
      */
     public function inspection()
     {
@@ -187,6 +187,11 @@ class DriverController extends Controller
             }
         }
 
-        return view('driver.inspection', compact('driver', 'bus', 'inspectionDaysLeft', 'inspectionExpiryStatus'));
+        return view('driver.inspection', compact(
+            'driver',
+            'bus',
+            'inspectionDaysLeft',
+            'inspectionExpiryStatus'
+        ));
     }
 }
