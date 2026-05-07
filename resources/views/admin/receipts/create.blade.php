@@ -1,12 +1,13 @@
 <x-admin-layout>
     <div class="receipt-create-wrapper fade-up">
         <div class="max-w-4xl mx-auto">
-            
+
             <div class="welcome-header-minimal mb-8">
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="page-title">Generate New Receipt</h1>
-                        <p class="text-sm text-gray-500 mt-1">Fill in the details below to create an official payment record.</p>
+                        <p class="text-sm text-gray-500 mt-1">Fill in the details below to create an official payment
+                            record.</p>
                     </div>
                     <a href="{{ route('admin.dashboard') }}" class="btn-back">
                         <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
@@ -17,19 +18,26 @@
             <div class="receipt-form-card">
                 <form action="{{ route('admin.receipts.store') }}" method="POST">
                     @csrf
-                    
+                    @if(isset($prefill['booking_id']))
+                        <input type="hidden" name="booking_id" value="{{ $prefill['booking_id'] }}">
+                    @endif
+
                     <div class="form-section-title">
                         <i class="fas fa-user-tag mr-2"></i> Customer Information
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div>
                             <label for="customer_name" class="premium-label">Customer Full Name</label>
-                            <input type="text" name="customer_name" id="customer_name" class="premium-input" placeholder="e.g. Michael Kanyingi" required>
+                            <input type="text" name="customer_name" id="customer_name" class="premium-input"
+                                placeholder="e.g. Michael Kanyingi"
+                                value="{{ old('customer_name', $prefill['customer_name'] ?? '') }}" required>
                         </div>
                         <div>
                             <label for="customer_phone" class="premium-label">Phone Number</label>
-                            <input type="text" name="customer_phone" id="customer_phone" class="premium-input" placeholder="e.g. +254 712 345 678" required>
+                            <input type="text" name="customer_phone" id="customer_phone" class="premium-input"
+                                placeholder="e.g. +254 712 345 678"
+                                value="{{ old('customer_phone', $prefill['customer_phone'] ?? '') }}" required>
                         </div>
                     </div>
 
@@ -43,7 +51,7 @@
                             <select name="bus_number" id="bus_number" class="premium-input" required>
                                 <option value="">Choose a Vehicle</option>
                                 @foreach($buses as $bus)
-                                    <option value="{{ $bus->plate_number }}">
+                                    <option value="{{ $bus->plate_number }}" {{ (old('bus_number', $prefill['bus_number'] ?? '') == $bus->plate_number) ? 'selected' : '' }}>
                                         {{ $bus->plate_number }} 
                                         @if($bus->model) — {{ $bus->model }} @endif
                                     </option>
@@ -52,7 +60,9 @@
                         </div>
                         <div>
                             <label for="trip_route" class="premium-label">Route / Service Description</label>
-                            <input type="text" name="trip_route" id="trip_route" class="premium-input" placeholder="e.g. Nairobi to Mombasa" required>
+                            <input type="text" name="trip_route" id="trip_route" class="premium-input"
+                                placeholder="e.g. Nairobi to Mombasa"
+                                value="{{ old('trip_route', $prefill['trip_route'] ?? '') }}" required>
                         </div>
                     </div>
 
@@ -61,7 +71,9 @@
                             <label for="amount" class="premium-label">Amount Paid (KES)</label>
                             <div class="amount-input-wrap">
                                 <span class="currency-prefix">KES</span>
-                                <input type="number" name="amount" id="amount" class="premium-input has-prefix" placeholder="0.00" step="0.01" required>
+                                <input type="number" name="amount" id="amount" class="premium-input has-prefix"
+                                    placeholder="0.00" step="0.01" value="{{ old('amount', $prefill['amount'] ?? '') }}"
+                                    required>
                             </div>
                         </div>
                         <div>
@@ -75,10 +87,8 @@
                         </div>
                         <div>
                             <label for="receipt_date" class="premium-label">Date of Payment</label>
-                            <input type="date" name="receipt_date" id="receipt_date" class="premium-input" 
-                                value="{{ date('Y-m-d') }}" 
-                                max="{{ date('Y-m-d') }}" 
-                                required>
+                            <input type="date" name="receipt_date" id="receipt_date" class="premium-input"
+                                value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}" required>
                         </div>
                     </div>
 
@@ -138,7 +148,7 @@
             background: white;
             border-radius: 24px;
             padding: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
             border: 1px solid #f1f5f9;
         }
 
@@ -222,8 +232,15 @@
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </x-admin-layout>

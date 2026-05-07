@@ -8,6 +8,7 @@
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
+        <input type="hidden" name="redirect_to" value="{{ old('redirect_to', request('redirect_to', session('auth_redirect_to'))) }}">
 
         <!-- Email Address -->
         <div class="form-group">

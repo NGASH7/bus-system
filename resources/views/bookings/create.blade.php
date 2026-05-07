@@ -1,11 +1,37 @@
 <x-user-layout>
     <div class="booking-wrapper fade-up">
-        
+
         <div class="booking-hero">
             <span class="hero-badge">Premium Charter Service</span>
             <h1 class="hero-title">PROPOSE A BOOKING</h1>
-            <p class="hero-subtitle">Fill out the details of your trip to receive a custom offer from our fleet management team. We guarantee luxury and safety for every mile.</p>
+            <p class="hero-subtitle">Fill out the details of your trip to receive a custom offer from our fleet
+                management team. We guarantee luxury and safety for every mile.</p>
         </div>
+
+        @if(!empty($handoff['date']) || !empty($handoff['destination']) || !empty($selectedBus))
+            <div class="handoff-banner">
+                <div>
+                    <p class="handoff-title"><i class="fas fa-wand-magic-sparkles"></i> Quick Check Handoff Applied</p>
+                    <p class="handoff-sub">We preloaded your booking details from availability check. Review and submit.</p>
+                </div>
+                <div class="handoff-chips">
+                    @if(!empty($handoff['date']))
+                        <span class="handoff-chip"><i class="fas fa-calendar-day"></i>
+                            {{ \Illuminate\Support\Carbon::parse($handoff['date'])->format('d M Y') }}</span>
+                    @endif
+                    @if(!empty($handoff['destination']))
+                        <span class="handoff-chip"><i class="fas fa-location-dot"></i> {{ $handoff['destination'] }}</span>
+                    @endif
+                    @if(!empty($handoff['preferred_capacity']))
+                        <span class="handoff-chip"><i class="fas fa-users"></i> {{ $handoff['preferred_capacity'] }}+
+                            seats</span>
+                    @endif
+                    @if(!empty($selectedBus))
+                        <span class="handoff-chip"><i class="fas fa-bus"></i> {{ $selectedBus->plate_number }}</span>
+                    @endif
+                </div>
+            </div>
+        @endif
 
         <form action="{{ route('bookings.store') }}" method="POST" class="booking-form-card">
             @csrf
@@ -22,12 +48,12 @@
                         <label>Type of Service <span class="required">*</span></label>
                         <select name="service_type" required class="premium-input">
                             <option value="">Select an occasion...</option>
-                            <option value="School Trip">Educational / School Trip</option>
-                            <option value="Wedding Transportation">Wedding Transportation</option>
-                            <option value="Corporate Retreat">Corporate Event / Retreat</option>
-                            <option value="Funeral / Memorial">Funeral / Memorial</option>
-                            <option value="Sports Team Travel">Sports Team Travel</option>
-                            <option value="Private Tour">Private Tour Group</option>
+                            <option value="School Trip" {{ old('service_type', $handoff['service_type'] ?? '') === 'School Trip' ? 'selected' : '' }}>Educational / School Trip</option>
+                            <option value="Wedding Transportation" {{ old('service_type', $handoff['service_type'] ?? '') === 'Wedding Transportation' ? 'selected' : '' }}>Wedding Transportation</option>
+                            <option value="Corporate Retreat" {{ old('service_type', $handoff['service_type'] ?? '') === 'Corporate Retreat' ? 'selected' : '' }}>Corporate Event / Retreat</option>
+                            <option value="Funeral / Memorial" {{ old('service_type', $handoff['service_type'] ?? '') === 'Funeral / Memorial' ? 'selected' : '' }}>Funeral / Memorial</option>
+                            <option value="Sports Team Travel" {{ old('service_type', $handoff['service_type'] ?? '') === 'Sports Team Travel' ? 'selected' : '' }}>Sports Team Travel</option>
+                            <option value="Private Tour" {{ old('service_type', $handoff['service_type'] ?? '') === 'Private Tour' ? 'selected' : '' }}>Private Tour Group</option>
                         </select>
                     </div>
 
@@ -37,7 +63,8 @@
                             <option value="">Any available vehicle</option>
                             @foreach($buses as $bus)
                                 <option value="{{ $bus->id }}" {{ $selectedBus && $selectedBus->id == $bus->id ? 'selected' : '' }}>
-                                    {{ $bus->plate_number }} ({{ $bus->brand ?? 'Standard' }} - {{ $bus->capacity ?? 'N/A' }} Seats)
+                                    {{ $bus->plate_number }} ({{ $bus->brand ?? 'Standard' }} -
+                                    {{ $bus->capacity ?? 'N/A' }} Seats)
                                 </option>
                             @endforeach
                         </select>
@@ -59,15 +86,21 @@
                         <div class="route-divider hidden-mobile">
                             <i class="fas fa-arrow-right"></i>
                         </div>
-                        
+
                         <div class="input-group">
-                            <label><i class="fas fa-map-marker-alt text-maroon"></i> Pickup Location <span class="required">*</span></label>
-                            <input type="text" name="pickup_location" required placeholder="E.g., Mwigito Campus Main Gate" class="premium-input border-focus">
+                            <label><i class="fas fa-map-marker-alt text-maroon"></i> Pickup Location <span
+                                    class="required">*</span></label>
+                            <input type="text" name="pickup_location" required
+                                placeholder="E.g., Mwigito Campus Main Gate" class="premium-input border-focus"
+                                value="{{ old('pickup_location') }}">
                         </div>
 
                         <div class="input-group">
-                            <label><i class="fas fa-flag-checkered text-maroon"></i> Destination <span class="required">*</span></label>
-                                        <input type="text" name="destination" required placeholder="E.g., National Museum, Nairobi" value="{{ old('destination', $prefill['destination'] ?? '') }}" class="premium-input border-focus">
+                            <label><i class="fas fa-flag-checkered text-maroon"></i> Destination <span
+                                    class="required">*</span></label>
+                            <input type="text" name="destination" required placeholder="E.g., National Museum, Nairobi"
+                                class="premium-input border-focus"
+                                value="{{ old('destination', $handoff['destination'] ?? '') }}">
                         </div>
                     </div>
 
@@ -80,11 +113,14 @@
                                 <div class="time-grid">
                                     <div class="input-group">
                                         <label>Date <span class="required">*</span></label>
-                                        <input type="date" name="date" required min="{{ date('Y-m-d') }}" value="{{ old('date', $prefill['date'] ?? '') }}" class="premium-input bg-gray">
+                                        <input type="date" name="date" required min="{{ date('Y-m-d') }}"
+                                            class="premium-input bg-gray"
+                                            value="{{ old('date', $handoff['date'] ?? '') }}">
                                     </div>
                                     <div class="input-group">
                                         <label>Time <span class="required">*</span></label>
-                                        <input type="time" name="pickup_time" required value="{{ old('pickup_time', $prefill['pickup_time'] ?? '') }}" class="premium-input bg-gray">
+                                        <input type="time" name="pickup_time" required class="premium-input bg-gray"
+                                            value="{{ old('pickup_time', '08:00') }}">
                                     </div>
                                 </div>
                             </div>
@@ -94,7 +130,8 @@
                                 <div class="time-grid">
                                     <div class="input-group">
                                         <label>Date</label>
-                                        <input type="date" name="return_date" min="{{ date('Y-m-d') }}" class="premium-input bg-gray">
+                                        <input type="date" name="return_date" min="{{ date('Y-m-d') }}"
+                                            class="premium-input bg-gray">
                                     </div>
                                     <div class="input-group">
                                         <label>Time</label>
@@ -124,9 +161,11 @@
                             <label class="pricing-label">Proposed Budget <span class="required">*</span></label>
                             <div class="currency-input-wrap">
                                 <span class="currency-symbol">KES</span>
-                                <input type="number" name="offered_price" required min="1000" placeholder="00,000" class="input-currency">
+                                <input type="number" name="offered_price" required min="1000" placeholder="00,000"
+                                    class="input-currency" value="{{ old('offered_price') }}">
                             </div>
-                            <p class="pricing-hint">Propose a fair price for your journey. Our admin will review and can confirm or send a counter-offer.</p>
+                            <p class="pricing-hint">Propose a fair price for your journey. Our admin will review and can
+                                confirm or send a counter-offer.</p>
                         </div>
                     </div>
 
@@ -134,7 +173,9 @@
                     <div class="details-col">
                         <div class="input-group" style="height: 100%;">
                             <label>Additional Requirements</label>
-                            <textarea name="details" rows="5" placeholder="Do you have special luggage requirements? Need a specific route? Let us know here..." class="premium-input textarea-custom"></textarea>
+                            <textarea name="details" rows="5"
+                                placeholder="Do you have special luggage requirements? Need a specific route? Let us know here..."
+                                class="premium-input textarea-custom"></textarea>
                         </div>
                     </div>
                 </div>
@@ -142,10 +183,12 @@
                 <!-- Submit Action -->
                 <div class="form-footer">
                     <p class="footer-note">
-                        <i class="fas fa-shield-alt"></i> By submitting this offer, you agree to our <a href="#" class="text-maroon">carriage policies</a>. No payment is required until the offer is firmly accepted.
+                        <i class="fas fa-shield-alt"></i> By submitting this offer, you agree to our <a href="#"
+                            class="text-maroon">carriage policies</a>. No payment is required until the offer is firmly
+                        accepted.
                     </p>
                     <button type="submit" class="btn-submit">
-                        SUBMIT OFFER 
+                        SUBMIT OFFER
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -206,9 +249,50 @@
         .booking-form-card {
             background: white;
             border-radius: 32px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
             border: 1px solid #f3f4f6;
             overflow: hidden;
+        }
+
+        .handoff-banner {
+            background: linear-gradient(135deg, #f8f4ff, #fff);
+            border: 1px solid #e9ddff;
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+        }
+
+        .handoff-title {
+            margin: 0;
+            font-weight: 900;
+            font-size: 14px;
+            color: #4c1d95;
+        }
+
+        .handoff-sub {
+            margin: 6px 0 0;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .handoff-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .handoff-chip {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4c1d95;
+            background: #f3e8ff;
+            border: 1px solid #e9d5ff;
+            border-radius: 999px;
+            padding: 6px 10px;
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
         }
 
         .form-section {
@@ -264,7 +348,9 @@
         }
 
         @media(max-width: 768px) {
-            .input-grid { grid-template-columns: 1fr; }
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .input-group label {
@@ -277,7 +363,9 @@
             margin-bottom: 8px;
         }
 
-        .required { color: #ef4444; }
+        .required {
+            color: #ef4444;
+        }
 
         .premium-input {
             width: 100%;
@@ -302,6 +390,7 @@
             background: white;
             border-color: #e5e7eb;
         }
+
         .premium-input.border-focus:focus {
             border-color: var(--maroon);
         }
@@ -339,8 +428,13 @@
         }
 
         @media(max-width: 768px) {
-            .route-grid { grid-template-columns: 1fr; }
-            .hidden-mobile { display: none !important; }
+            .route-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hidden-mobile {
+                display: none !important;
+            }
         }
 
         .route-divider {
@@ -357,18 +451,20 @@
             align-items: center;
             justify-content: center;
             color: #9ca3af;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             z-index: 10;
         }
 
-        .text-maroon { color: var(--maroon); }
+        .text-maroon {
+            color: var(--maroon);
+        }
 
         .schedule-box {
             background: white;
             padding: 24px;
             border-radius: 24px;
             border: 1px solid #e5e7eb;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.01);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.01);
         }
 
         .schedule-grid {
@@ -378,7 +474,9 @@
         }
 
         @media(max-width: 768px) {
-            .schedule-grid { grid-template-columns: 1fr; }
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .schedule-block h3 {
@@ -404,14 +502,16 @@
         }
 
         @media(max-width: 768px) {
-            .proposal-grid { grid-template-columns: 1fr; }
+            .proposal-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .pricing-box {
             background: var(--maroon-pale);
             padding: 24px;
             border-radius: 24px;
-            border: 1px solid rgba(128,0,0,0.1);
+            border: 1px solid rgba(128, 0, 0, 0.1);
             position: relative;
             overflow: hidden;
             height: 100%;
@@ -466,7 +566,7 @@
             color: #111827;
             outline: none;
             transition: all 0.2s;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
             font-family: inherit;
         }
 
@@ -542,7 +642,7 @@
         .btn-submit:hover {
             background: #000;
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
 
         .btn-submit i {
@@ -558,8 +658,15 @@
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         input[type="date"]::-webkit-calendar-picker-indicator,
@@ -568,6 +675,7 @@
             opacity: 0.6;
             transition: 0.2s;
         }
+
         input[type="date"]::-webkit-calendar-picker-indicator:hover,
         input[type="time"]::-webkit-calendar-picker-indicator:hover {
             opacity: 1;

@@ -14,7 +14,7 @@
                             <a href="{{ route('bookings.create') }}" class="btn-hero-primary">
                                 <i class="fas fa-bus"></i> Book A Bus
                             </a>
-                            <a href="#" class="btn-hero-secondary">
+                            <a href="{{ route('bookings.schedule') }}" class="btn-hero-secondary">
                                 <i class="fas fa-calendar-alt"></i> View Schedule
                             </a>
                         </div>

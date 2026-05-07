@@ -25,11 +25,18 @@ class Booking extends Model
         'status',
         'details',
         'payment_status',
+        'payment_method',
+        'payer_phone',
+        'payment_reference',
+        'mpesa_checkout_request_id',
+        'mpesa_merchant_request_id',
+        'paid_at',
     ];
 
     protected $casts = [
         'date' => 'date',
         'return_date' => 'date',
+        'paid_at' => 'datetime',
     ];
 
     public function user()

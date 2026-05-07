@@ -15,11 +15,11 @@ class AdminAnalyticsController extends Controller
 {
     public function index(Request $request)
     {
-        $filter = $request->get('filter', 'monthly'); 
+        $filter = $request->get('filter', 'monthly');
         $fromDate = $request->get('from_date');
         $toDate = $request->get('to_date');
-        
-        $overviewStartDate = match($filter) {
+
+        $overviewStartDate = match ($filter) {
             'daily' => Carbon::now()->subDays(30),
             'weekly' => Carbon::now()->subWeeks(12),
             default => Carbon::now()->subMonths(6),
@@ -49,7 +49,7 @@ class AdminAnalyticsController extends Controller
         $expenses = BusService::where('status', 'paid')
             ->whereBetween('updated_at', [$filterStartDate, $filterEndDate])
             ->sum('cost');
-        
+
         $financials = [
             'revenue' => $revenue,
             'expenses' => $expenses,
@@ -81,7 +81,7 @@ class AdminAnalyticsController extends Controller
             ->groupBy('sort_date', 'label')->orderBy('sort_date', 'asc')->get()->pluck('total', 'label')->toArray();
 
         $allLabels = array_unique(array_merge(array_keys($revenueTrend), array_keys($expenseTrend)));
-        
+
         $finalTrend = [];
         foreach ($allLabels as $label) {
             $rev = $revenueTrend[$label] ?? 0;
@@ -98,7 +98,17 @@ class AdminAnalyticsController extends Controller
         $userCount = User::where('role', 'user')->count();
 
         return view('admin.analytics.index', compact(
-            'fleetStats', 'bookingData', 'financials', 'finalTrend', 'driverCount', 'userCount', 'filter', 'fromDate', 'toDate', 'filterStartDate', 'filterEndDate'
+            'fleetStats',
+            'bookingData',
+            'financials',
+            'finalTrend',
+            'driverCount',
+            'userCount',
+            'filter',
+            'fromDate',
+            'toDate',
+            'filterStartDate',
+            'filterEndDate'
         ));
     }
 }

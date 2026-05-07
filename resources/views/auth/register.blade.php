@@ -1,6 +1,13 @@
 <x-guest-layout title="Join the Fleet" subtitle="Create your account to start managing journeys">
     <form method="POST" action="{{ route('register') }}">
         @csrf
+        <input type="hidden" name="redirect_to" value="{{ old('redirect_to', request('redirect_to', session('auth_redirect_to'))) }}">
+
+        @if(request('redirect_to') || session('auth_redirect_to'))
+            <div class="mb-4 p-3 rounded-xl border border-purple-200 bg-purple-50 text-purple-900 text-sm font-semibold">
+                You are signing up to continue with your bus booking. Your checked details will be prefilled after registration.
+            </div>
+        @endif
 
         <!-- Name -->
         <div class="form-group">
@@ -72,7 +79,7 @@
 
         <div class="footer-links" style="margin-top: 30px; text-align: center; justify-content: center;">
             <span style="color: #6b7280;">Already member?</span>
-            <a href="{{ route('login') }}" style="margin-left: 5px;">Login here</a>
+            <a href="{{ route('login', ['redirect_to' => request('redirect_to', session('auth_redirect_to'))]) }}" style="margin-left: 5px;">Login here</a>
         </div>
     </form>
 </x-guest-layout>

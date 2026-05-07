@@ -654,6 +654,112 @@
             gap: 10px;
         }
 
+        .availability-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .availability-form .qa-input,
+        .availability-form .btn-qa {
+            width: 100%;
+        }
+
+        .qa-error {
+            font-size: 12px;
+            color: #b42318;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .availability-result {
+            margin-top: 12px;
+            padding: 13px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: linear-gradient(180deg, #ffffff, #faf7ff);
+        }
+
+        .availability-empty {
+            font-size: 13px;
+            color: #7a1a1a;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .availability-title {
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 700;
+            margin: 0 0 8px;
+        }
+
+        .availability-filter {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0 0 10px;
+        }
+
+        .availability-list {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .availability-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            padding: 8px 10px;
+            border-radius: 9px;
+            background: rgba(90, 26, 154, 0.06);
+        }
+
+        .book-now-link {
+            color: #5a1a9a;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 6px 10px;
+            border: 1px solid rgba(90, 26, 154, 0.35);
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .book-now-link:hover {
+            background: rgba(90, 26, 154, 0.08);
+        }
+
+        .renter-cta {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .renter-cta p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .renter-cta-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .renter-cta-actions .btn-qa {
+            text-decoration: none;
+            padding: 8px 15px;
+            font-size: 12px;
+            flex: 1;
+        }
+
         .qa-input {
             padding: 11px 15px;
             border-radius: 10px;
@@ -1077,6 +1183,17 @@
             }
         }
 
+        @media (max-width: 640px) {
+            .availability-list li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .renter-cta-actions {
+                flex-direction: column;
+            }
+        }
+
         @media (max-width: 768px) {
             .nav-links .nav-chip span {
                 display: none;
@@ -1307,20 +1424,87 @@
                     <div class="qa-icon">🔑</div>
                     <div class="qa-title purple">I'm a Renter</div>
                     <div class="qa-form">
-                        <input class="qa-input" type="date" id="rental-date">
-                        <input class="qa-input" type="text" id="rental-dest" placeholder="Destination / Occasion">
-                        <button class="btn-qa purple" onclick="alert('Feature available after login')">
-                            <i class="fas fa-calendar-check"></i> Check Availability
-                        </button>
+                        <form method="GET" action="{{ route('landing') }}" class="availability-form">
+                            <input class="qa-input" type="date" id="rental-date" name="availability_date"
+                                value="{{ old('availability_date', $selectedDate ?? '') }}">
+                            <input class="qa-input" type="text" id="rental-dest" name="destination"
+                                value="{{ old('destination', $destination ?? '') }}"
+                                placeholder="Destination / Occasion">
+                            <input class="qa-input" type="number" id="preferred-capacity" name="preferred_capacity"
+                                min="1" max="200"
+                                value="{{ old('preferred_capacity', $preferredCapacity ?? '') }}"
+                                placeholder="Preferred seating capacity">
+                            <button class="btn-qa purple" type="submit">
+                                <i class="fas fa-calendar-check"></i> Check Availability
+                            </button>
+                        </form>
+                        @error('availability_date')
+                            <p class="qa-error">
+                                {{ $message }}
+                            </p>
+                        @enderror
+                        @error('preferred_capacity')
+                            <p class="qa-error">
+                                {{ $message }}
+                            </p>
+                        @enderror
                         <p class="qa-note"><i class="fas fa-tag" style="color:#5a1a9a;"></i> Check availability and get
                             instant pricing.</p>
-                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
-                            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600;">To book our bus, please:</p>
-                            <div style="display: flex; gap: 10px;">
-                                <a href="{{ route('register') }}" class="btn-qa purple" style="text-decoration: none; padding: 8px 15px; font-size: 12px; flex: 1;">
+                        @if(!is_null($availableBuses))
+                            <div class="availability-result">
+                                @if($availableBuses->isEmpty())
+                                    <p class="availability-empty">
+                                        No buses available on {{ \Illuminate\Support\Carbon::parse($selectedDate)->format('d M Y') }}.
+                                    </p>
+                                @else
+                                    <p class="availability-title">
+                                        {{ $availableBuses->count() }} bus(es) available on {{ \Illuminate\Support\Carbon::parse($selectedDate)->format('d M Y') }}:
+                                    </p>
+                                    @if(!empty($preferredCapacity))
+                                        <p class="availability-filter">
+                                            Filter applied: minimum {{ $preferredCapacity }} seats.
+                                        </p>
+                                    @endif
+                                    <ul class="availability-list">
+                                        @foreach($availableBuses as $bus)
+                                            <li>
+                                                <span>{{ $bus->plate_number }} - {{ $bus->model }} ({{ $bus->capacity }} seats)</span>
+                                                <a href="{{ route('bookings.create', [
+                                                    'bus_id' => $bus->id,
+                                                    'date' => $selectedDate,
+                                                    'destination' => $destination,
+                                                    'preferred_capacity' => $preferredCapacity,
+                                                    'service_type' => 'Private Tour',
+                                                ]) }}" class="book-now-link">
+                                                    Book now
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </div>
+                        @endif
+                        <div class="renter-cta">
+                            <p>To book our bus, please:</p>
+                            <div class="renter-cta-actions">
+                                <a href="{{ route('register', [
+                                    'redirect_to' => route('bookings.create', [
+                                        'date' => $selectedDate,
+                                        'destination' => $destination,
+                                        'preferred_capacity' => $preferredCapacity,
+                                        'service_type' => 'Private Tour',
+                                    ], false),
+                                ]) }}" class="btn-qa purple">
                                     <i class="fas fa-user-plus"></i> Register
                                 </a>
-                                <a href="{{ route('login') }}" class="btn-qa maroon" style="text-decoration: none; padding: 8px 15px; font-size: 12px; flex: 1;">
+                                <a href="{{ route('login', [
+                                    'redirect_to' => route('bookings.create', [
+                                        'date' => $selectedDate,
+                                        'destination' => $destination,
+                                        'preferred_capacity' => $preferredCapacity,
+                                        'service_type' => 'Private Tour',
+                                    ], false),
+                                ]) }}" class="btn-qa maroon">
                                     <i class="fas fa-sign-in-alt"></i> Login
                                 </a>
                             </div>
