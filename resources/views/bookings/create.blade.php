@@ -7,6 +7,29 @@
             <p class="hero-subtitle">Fill out the details of your trip to receive a custom offer from our fleet management team. We guarantee luxury and safety for every mile.</p>
         </div>
 
+        @if(!empty($handoff['date']) || !empty($handoff['destination']) || !empty($selectedBus))
+            <div class="handoff-banner">
+                <div>
+                    <p class="handoff-title"><i class="fas fa-wand-magic-sparkles"></i> Quick Check Handoff Applied</p>
+                    <p class="handoff-sub">We preloaded your booking details from availability check. Review and submit.</p>
+                </div>
+                <div class="handoff-chips">
+                    @if(!empty($handoff['date']))
+                        <span class="handoff-chip"><i class="fas fa-calendar-day"></i> {{ \Illuminate\Support\Carbon::parse($handoff['date'])->format('d M Y') }}</span>
+                    @endif
+                    @if(!empty($handoff['destination']))
+                        <span class="handoff-chip"><i class="fas fa-location-dot"></i> {{ $handoff['destination'] }}</span>
+                    @endif
+                    @if(!empty($handoff['preferred_capacity']))
+                        <span class="handoff-chip"><i class="fas fa-users"></i> {{ $handoff['preferred_capacity'] }}+ seats</span>
+                    @endif
+                    @if(!empty($selectedBus))
+                        <span class="handoff-chip"><i class="fas fa-bus"></i> {{ $selectedBus->plate_number }}</span>
+                    @endif
+                </div>
+            </div>
+        @endif
+
         <form action="{{ route('bookings.store') }}" method="POST" class="booking-form-card">
             @csrf
 
@@ -22,12 +45,12 @@
                         <label>Type of Service <span class="required">*</span></label>
                         <select name="service_type" required class="premium-input">
                             <option value="">Select an occasion...</option>
-                            <option value="School Trip">Educational / School Trip</option>
-                            <option value="Wedding Transportation">Wedding Transportation</option>
-                            <option value="Corporate Retreat">Corporate Event / Retreat</option>
-                            <option value="Funeral / Memorial">Funeral / Memorial</option>
-                            <option value="Sports Team Travel">Sports Team Travel</option>
-                            <option value="Private Tour">Private Tour Group</option>
+                            <option value="School Trip" {{ old('service_type', $handoff['service_type'] ?? '') === 'School Trip' ? 'selected' : '' }}>Educational / School Trip</option>
+                            <option value="Wedding Transportation" {{ old('service_type', $handoff['service_type'] ?? '') === 'Wedding Transportation' ? 'selected' : '' }}>Wedding Transportation</option>
+                            <option value="Corporate Retreat" {{ old('service_type', $handoff['service_type'] ?? '') === 'Corporate Retreat' ? 'selected' : '' }}>Corporate Event / Retreat</option>
+                            <option value="Funeral / Memorial" {{ old('service_type', $handoff['service_type'] ?? '') === 'Funeral / Memorial' ? 'selected' : '' }}>Funeral / Memorial</option>
+                            <option value="Sports Team Travel" {{ old('service_type', $handoff['service_type'] ?? '') === 'Sports Team Travel' ? 'selected' : '' }}>Sports Team Travel</option>
+                            <option value="Private Tour" {{ old('service_type', $handoff['service_type'] ?? '') === 'Private Tour' ? 'selected' : '' }}>Private Tour Group</option>
                         </select>
                     </div>
 
@@ -62,12 +85,14 @@
                         
                         <div class="input-group">
                             <label><i class="fas fa-map-marker-alt text-maroon"></i> Pickup Location <span class="required">*</span></label>
-                            <input type="text" name="pickup_location" required placeholder="E.g., Mwigito Campus Main Gate" class="premium-input border-focus">
+                            <input type="text" name="pickup_location" required placeholder="E.g., Mwigito Campus Main Gate" class="premium-input border-focus"
+                                value="{{ old('pickup_location') }}">
                         </div>
 
                         <div class="input-group">
                             <label><i class="fas fa-flag-checkered text-maroon"></i> Destination <span class="required">*</span></label>
-                            <input type="text" name="destination" required placeholder="E.g., National Museum, Nairobi" class="premium-input border-focus">
+                            <input type="text" name="destination" required placeholder="E.g., National Museum, Nairobi" class="premium-input border-focus"
+                                value="{{ old('destination', $handoff['destination'] ?? '') }}">
                         </div>
                     </div>
 
@@ -80,11 +105,13 @@
                                 <div class="time-grid">
                                     <div class="input-group">
                                         <label>Date <span class="required">*</span></label>
-                                        <input type="date" name="date" required min="{{ date('Y-m-d') }}" class="premium-input bg-gray">
+                                        <input type="date" name="date" required min="{{ date('Y-m-d') }}" class="premium-input bg-gray"
+                                            value="{{ old('date', $handoff['date'] ?? '') }}">
                                     </div>
                                     <div class="input-group">
                                         <label>Time <span class="required">*</span></label>
-                                        <input type="time" name="pickup_time" required class="premium-input bg-gray">
+                                        <input type="time" name="pickup_time" required class="premium-input bg-gray"
+                                            value="{{ old('pickup_time', '08:00') }}">
                                     </div>
                                 </div>
                             </div>
@@ -124,7 +151,8 @@
                             <label class="pricing-label">Proposed Budget <span class="required">*</span></label>
                             <div class="currency-input-wrap">
                                 <span class="currency-symbol">KES</span>
-                                <input type="number" name="offered_price" required min="1000" placeholder="00,000" class="input-currency">
+                                <input type="number" name="offered_price" required min="1000" placeholder="00,000" class="input-currency"
+                                    value="{{ old('offered_price') }}">
                             </div>
                             <p class="pricing-hint">Propose a fair price for your journey. Our admin will review and can confirm or send a counter-offer.</p>
                         </div>
@@ -209,6 +237,47 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.05);
             border: 1px solid #f3f4f6;
             overflow: hidden;
+        }
+
+        .handoff-banner {
+            background: linear-gradient(135deg, #f8f4ff, #fff);
+            border: 1px solid #e9ddff;
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+        }
+
+        .handoff-title {
+            margin: 0;
+            font-weight: 900;
+            font-size: 14px;
+            color: #4c1d95;
+        }
+
+        .handoff-sub {
+            margin: 6px 0 0;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .handoff-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .handoff-chip {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4c1d95;
+            background: #f3e8ff;
+            border: 1px solid #e9d5ff;
+            border-radius: 999px;
+            padding: 6px 10px;
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
         }
 
         .form-section {

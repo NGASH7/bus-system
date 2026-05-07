@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bus;
+use App\Models\SystemLog;
 use App\Models\User;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
@@ -21,47 +22,13 @@ class AdminController extends Controller
             'total_revenue' => Receipt::whereNull('booking_id')->sum('amount') + \App\Models\Booking::whereIn('status', ['accepted', 'completed'])->sum('amount'),
         ];
 
-        // Fetch various activities
-        $maintenance = \App\Models\BusService::with(['bus', 'driver'])->latest()->take(5)->get()->map(function($item) {
-            return [
-                'type' => 'maintenance',
-                'title' => ($item->driver->name ?? 'Driver') . ' — ' . $item->bus->plate_number,
-                'msg' => 'Requested payment for: ' . $item->description . ' (KES ' . number_format($item->cost) . ')',
-                'time' => $item->created_at,
-                'icon' => 'fas fa-tools',
-                'accent' => 'service-accent'
-            ];
-        });
-
-        $receipts = Receipt::latest()->take(5)->get()->map(function($item) {
-            return [
-                'type' => 'revenue',
-                'title' => 'Revenue Recorded',
-                'msg' => 'Income of KES ' . number_format($item->amount) . ' received on ' . $item->receipt_date->format('d M'),
-                'time' => $item->created_at,
-                'icon' => 'fas fa-hand-holding-usd',
-                'accent' => 'billing-accent'
-            ];
-        });
-
-        $drivers = User::where('role', 'driver')->latest()->take(3)->get()->map(function($item) {
-            return [
-                'type' => 'driver',
-                'title' => 'New Driver Joined',
-                'msg' => 'Driver ' . $item->name . ' has been registered in the system.',
-                'time' => $item->created_at,
-                'icon' => 'fas fa-user-plus',
-                'accent' => 'driver-accent'
-            ];
-        });
-
-        // Merge and sort for dashboard (last 5)
-        $activities = collect()
-            ->concat($maintenance)
-            ->concat($receipts)
-            ->concat($drivers)
-            ->sortByDesc('time')
-            ->take(5);
+        // Dashboard shows only the latest 5 system log entries.
+        $activities = SystemLog::query()
+            ->with('user')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(fn (SystemLog $log) => $this->mapSystemLog($log));
 
         // Fetch Alerts (Expiries)
         $today = now();
@@ -159,46 +126,39 @@ class AdminController extends Controller
      */
     public function logs()
     {
-        // Fetch larger datasets for the full log page
-        $maintenance = \App\Models\BusService::with(['bus', 'driver'])->latest()->take(50)->get()->map(function($item) {
-            return [
-                'type' => 'maintenance',
-                'title' => ($item->driver->name ?? 'Driver') . ' — ' . $item->bus->plate_number,
-                'msg' => 'Requested payment for: ' . $item->description . ' (KES ' . number_format($item->cost) . ')',
-                'time' => $item->created_at,
-                'icon' => 'fas fa-tools',
-                'accent' => 'service-accent'
-            ];
-        });
-
-        $receipts = Receipt::latest()->take(50)->get()->map(function($item) {
-            return [
-                'type' => 'revenue',
-                'title' => 'Revenue Recorded',
-                'msg' => 'Income of KES ' . number_format($item->amount) . ' received on ' . $item->receipt_date->format('d M'),
-                'time' => $item->created_at,
-                'icon' => 'fas fa-hand-holding-usd',
-                'accent' => 'billing-accent'
-            ];
-        });
-
-        $drivers = User::where('role', 'driver')->latest()->take(20)->get()->map(function($item) {
-            return [
-                'type' => 'driver',
-                'title' => 'New Driver Joined',
-                'msg' => 'Driver ' . $item->name . ' has been registered in the system.',
-                'time' => $item->created_at,
-                'icon' => 'fas fa-user-plus',
-                'accent' => 'driver-accent'
-            ];
-        });
-
-        $activities = collect()
-            ->concat($maintenance)
-            ->concat($receipts)
-            ->concat($drivers)
-            ->sortByDesc('time');
+        $activities = SystemLog::query()
+            ->with('user')
+            ->latest()
+            ->get()
+            ->map(fn (SystemLog $log) => $this->mapSystemLog($log));
 
         return view('admin.logs.index', compact('activities'));
+    }
+
+    private function mapSystemLog(SystemLog $log): array
+    {
+        $action = strtolower($log->action);
+        $accent = 'system-accent';
+        $icon = 'fas fa-clipboard-list';
+
+        if (str_contains($action, 'login') || str_contains($action, 'auth')) {
+            $accent = 'driver-accent';
+            $icon = 'fas fa-right-to-bracket';
+        } elseif (str_contains($action, 'booking')) {
+            $accent = 'service-accent';
+            $icon = 'fas fa-calendar-check';
+        } elseif (str_contains($action, 'payment') || str_contains($action, 'receipt')) {
+            $accent = 'billing-accent';
+            $icon = 'fas fa-money-bill-wave';
+        }
+
+        return [
+            'type' => 'system',
+            'title' => $log->user?->name ? $log->user->name . ' (' . $log->action . ')' : 'System (' . $log->action . ')',
+            'msg' => e($log->description),
+            'time' => $log->created_at,
+            'icon' => $icon,
+            'accent' => $accent,
+        ];
     }
 }

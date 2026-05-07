@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'mpesa' => [
+        'base_url' => env('DARAJA_BASE_URL', env('MPESA_BASE_URL', 'https://sandbox.safaricom.co.ke')),
+        'consumer_key' => env('DARAJA_CONSUMER_KEY', env('MPESA_CONSUMER_KEY')),
+        'consumer_secret' => env('DARAJA_CONSUMER_SECRET', env('MPESA_CONSUMER_SECRET')),
+        'shortcode' => env('DARAJA_SHORTCODE', env('MPESA_SHORTCODE')),
+        'passkey' => env('DARAJA_PASSKEY', env('MPESA_PASSKEY')),
+        'transaction_type' => env('DARAJA_TRANSACTION_TYPE', env('MPESA_TRANSACTION_TYPE', 'CustomerPayBillOnline')),
+        'callback_url' => env('DARAJA_CALLBACK_URL', env('MPESA_CALLBACK_URL')),
+    ],
+
 ];

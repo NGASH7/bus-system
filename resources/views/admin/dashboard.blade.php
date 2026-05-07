@@ -70,11 +70,13 @@
             <!-- SYSTEM ACTIVITY LOG -->
             <div class="activity-section fade-up" style="animation-delay: 0.2s;">
                 <div class="section-header-compact mb-6">
-                    <h3 class="section-title-premium"><i class="fas fa-history mr-2"></i> System Activity Log</h3>
+                    <h3 class="section-title-premium section-title-link" onclick="window.location='{{ route('admin.logs') }}'">
+                        <i class="fas fa-history mr-2"></i> System Activity Log
+                    </h3>
                     <a href="{{ route('admin.logs') }}" class="view-all-link">View Everything</a>
                 </div>
 
-                <div class="activity-container">
+                <div class="activity-container activity-container-link" onclick="window.location='{{ route('admin.logs') }}'">
                     @forelse($activities as $activity)
                         <div class="activity-row {{ $loop->last ? 'last-row' : '' }}">
                             <div class="activity-marker {{ $activity['accent'] }}">
@@ -216,6 +218,18 @@
             letter-spacing: 0.5px;
         }
 
+        .section-title-link {
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .activity-container-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
         .view-all-link {
             font-size: 12px;
             font-weight: 700;
@@ -264,6 +278,7 @@
         .billing-accent { background: rgba(201, 168, 76, 0.05); color: var(--gold); }
         .driver-accent { background: rgba(31, 41, 55, 0.05); color: var(--text-main); }
         .service-accent { background: rgba(22, 163, 74, 0.05); color: #16a34a; }
+        .system-accent { background: rgba(14, 116, 144, 0.08); color: #0e7490; }
 
         .activity-content { flex: 1; }
 
