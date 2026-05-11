@@ -86,6 +86,7 @@ class BookingController extends Controller
         );
 
         // Notify Admins
+        $message = "New booking request! {$booking->user->name} has requested a bus to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ". Offered price: KES " . number_format($booking->offered_price, 0) . ". Please review.";
         $admins = \App\Models\User::where('role', 'admin')->get();
         foreach ($admins as $admin) {
             if ($admin->phone_number) {
@@ -120,7 +121,6 @@ class BookingController extends Controller
         }
 
         return redirect()->route('dashboard')->with('success', 'Your booking request has been submitted. The admin will review your offer shortly.');
-    }
     }
 
     /**
