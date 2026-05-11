@@ -437,10 +437,20 @@
                     class="nav-item {{ request()->routeIs('bookings.index') || (request()->routeIs('bookings.*') && !request()->routeIs('bookings.create')) ? 'active' : '' }}">
                     <i class="fas fa-history"></i> My Bookings
                 </a>
+<<<<<<< HEAD
                 <a href="{{ route('receipts.index') }}"
                     class="nav-item {{ request()->routeIs('receipts.*') ? 'active' : '' }}">
                     <i class="fas fa-receipt"></i> Receipts
                 </a>
+=======
+                <<<<<<<<< Temporary merge branch 1 <a href="#" class="nav-item">
+                    =========
+                    <a href="{{ route('receipts.index') }}"
+                        class="nav-item {{ request()->routeIs('receipts.*') ? 'active' : '' }}">
+                        >>>>>>>>> Temporary merge branch 2
+                        <i class="fas fa-receipt"></i> Receipts
+                    </a>
+>>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
             </nav>
 
             <div class="sidebar-footer">

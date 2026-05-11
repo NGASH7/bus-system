@@ -60,8 +60,27 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
-        $request->session()->forget('auth_redirect_to');
 
+<<<<<<< HEAD
+=======
+        // Send Welcome SMS & Email
+        $welcomeMessage = "Welcome to Mwigito Excel, {$user->name}! Your account has been successfully created. Book your next trip with us today.";
+
+        if ($user->phone_number) {
+            app(\App\Services\CelcomSmsService::class)->send($user->phone_number, $welcomeMessage);
+        }
+
+        if ($user->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::raw($welcomeMessage, function ($mail) use ($user) {
+                    $mail->to($user->email)->subject('Welcome to Mwigito Excel!');
+                });
+            } catch (\Exception $e) {
+                Log::error("Failed to send welcome email to {$user->email}: " . $e->getMessage());
+            }
+        }
+
+>>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

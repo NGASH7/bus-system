@@ -35,6 +35,13 @@ return [
         ],
     ],
 
+    'celcom' => [
+        'api_key' => env('CELCOM_API_KEY'),
+        'shortcode' => env('CELCOM_SHORTCODE'),
+        'partner_id' => env('CELCOM_PARTNER_ID'),
+        'base_url' => env('CELCOM_BASE_URL', 'https://isms.celcomafrica.com/api/services/sendsms/'),
+    ],
+
     'mpesa' => [
         'base_url' => env('DARAJA_BASE_URL', env('MPESA_BASE_URL', 'https://sandbox.safaricom.co.ke')),
         'consumer_key' => env('DARAJA_CONSUMER_KEY', env('MPESA_CONSUMER_KEY')),
