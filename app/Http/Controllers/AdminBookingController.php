@@ -81,6 +81,24 @@ class AdminBookingController extends Controller
             'paid_at' => now(),
         ]);
 
+        // Send SMS and email to driver
+         if ($booking->bus && $booking->bus->driver) {
+            $driverMsg = "New scheduled trip! You have been assigned a trip to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ". Check your dashboard for details.";
+            if ($booking->bus->driver->phone_number) {
+                app(\App\Services\CelcomSmsService::class)->send($booking->bus->driver->phone_number, $driverMsg);
+            }
+            if ($booking->bus->driver->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw($driverMsg, function ($mail) use ($booking) {
+                        $mail->to($booking->bus->driver->email)->subject('Mwigito Excel: New Trip Assignment');
+                    });
+                } catch (\Exception $e) {
+                    Log::error("Failed to send assignment email to driver {$booking->bus->driver->email}: " . $e->getMessage());
+                }
+            }
+        }
+
+        // Generate receipt if not already exists
         if (!\App\Models\Receipt::where('booking_id', $booking->id)->exists()) {
             \App\Models\Receipt::create([
                 'receipt_no' => 'MW-' . strtoupper(\Illuminate\Support\Str::random(8)),
