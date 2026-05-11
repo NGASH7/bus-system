@@ -207,6 +207,10 @@
             font-size: 20px;
         }
 
+        .notification-wrap {
+            position: relative;
+        }
+
         .notification-badge {
             position: absolute;
             top: -6px;
@@ -222,6 +226,128 @@
             line-height: 18px;
             text-align: center;
             border: 2px solid #fff;
+        }
+
+        .notification-panel {
+            position: absolute;
+            right: 0;
+            top: 36px;
+            width: 360px;
+            max-height: 420px;
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification-panel.show {
+            display: block;
+        }
+
+        .notification-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+        }
+
+        .notification-panel-header span {
+            background: #f3f4f6;
+            color: #374151;
+            border-radius: 999px;
+            font-size: 11px;
+            padding: 2px 8px;
+            font-weight: 700;
+        }
+
+        .notification-list {
+            max-height: 365px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            display: flex;
+            gap: 10px;
+            padding: 12px 14px;
+            border-bottom: 1px solid #f8fafc;
+        }
+        .notification-item-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+        .notification-item-link:hover .notification-item {
+            background: #f9fafb;
+        }
+        .notification-item.unread {
+            background: #fffaf0;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.success { background: #ecfdf3; color: #16a34a; }
+        .notification-icon.warning { background: #fffbeb; color: #d97706; }
+        .notification-icon.danger { background: #fef2f2; color: #dc2626; }
+        .notification-icon.info { background: #eff6ff; color: #2563eb; }
+
+        .notification-body { min-width: 0; }
+        .notification-title {
+            margin: 0 0 3px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .notification-message {
+            margin: 0 0 5px;
+            font-size: 12px;
+            line-height: 1.35;
+            color: #4b5563;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: 600;
+        }
+
+        .notification-empty {
+            padding: 18px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .notification-footer-link {
+            display: block;
+            text-align: center;
+            padding: 10px 12px;
+            border-top: 1px solid #f3f4f6;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--maroon);
+            background: #fff;
         }
 
         .content-area {
@@ -298,7 +424,7 @@
                     class="nav-item {{ request()->routeIs('admin.receipts.*') ? 'active' : '' }}">
                     <i class="fas fa-receipt"></i> Receipts
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs') ? 'active' : '' }}">
                     <i class="fas fa-history"></i> System Log
                 </a>
             </nav>
@@ -321,10 +447,7 @@
             <header class="admin-header">
                 <div class="header-title">Mwigito Excel Bus Management System</div>
                 <div class="header-actions">
-                    <a href="#" class="header-btn notification-btn" title="Notifications" aria-label="Notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </a>
+                    @include('partials.notification-dropdown')
                     <a href="{{ route('profile.edit') }}" class="header-btn">
                         <i class="fas fa-user-circle"></i> Profile
                     </a>
@@ -344,6 +467,38 @@
             </main>
         </div>
     </div>
+    <script>
+        (function () {
+            const toggle = document.getElementById('notification-toggle');
+            const panel = document.getElementById('notification-panel');
+            const wrap = document.getElementById('notification-wrap');
+            const badge = document.getElementById('notification-badge');
+            const panelCount = document.getElementById('notification-panel-count');
+            if (!toggle || !panel || !wrap) return;
+
+            toggle.addEventListener('click', function (event) {
+                event.preventDefault();
+                panel.classList.toggle('show');
+                if (panel.classList.contains('show')) {
+                    if (badge) badge.textContent = '0';
+                    if (panelCount) panelCount.textContent = '0';
+                    fetch('{{ route('notifications.read-all') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }).catch(function () {});
+                }
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!wrap.contains(event.target)) {
+                    panel.classList.remove('show');
+                }
+            });
+        })();
+    </script>
 </body>
 
 </html>

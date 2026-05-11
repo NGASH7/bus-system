@@ -7,7 +7,7 @@
                     <h1 class="premium-title">System Activity Log</h1>
                     <div class="header-line"></div>
                 </div>
-                <p class="premium-subtitle">Full historical record of system events, maintenance, and revenue.</p>
+                <p class="premium-subtitle">Full historical record of application actions captured by system logs.</p>
             </div>
 
             <!-- LOGS FEED -->
@@ -81,6 +81,7 @@
         .billing-accent { background: rgba(201, 168, 76, 0.05); color: var(--gold); }
         .driver-accent { background: rgba(31, 41, 55, 0.05); color: var(--text-dark); }
         .service-accent { background: rgba(22, 163, 74, 0.05); color: #16a34a; }
+        .system-accent { background: rgba(14, 116, 144, 0.08); color: #0e7490; }
 
         .activity-content { flex: 1; }
         .activity-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
@@ -92,6 +93,7 @@
         .type-tag.maintenance { background: #f0fdf4; color: #16a34a; }
         .type-tag.revenue { background: #fffbeb; color: #d97706; }
         .type-tag.driver { background: #f1f5f9; color: #475569; }
+        .type-tag.system { background: #ecfeff; color: #0e7490; }
 
         .fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

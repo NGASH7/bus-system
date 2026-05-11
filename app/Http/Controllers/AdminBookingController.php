@@ -15,7 +15,7 @@ class AdminBookingController extends Controller
             ->whereNotIn('status', ['accepted', 'rejected'])
             ->latest()
             ->get();
-            
+
         return view('admin.bookings.index', compact('bookings'));
     }
 
@@ -26,7 +26,7 @@ class AdminBookingController extends Controller
             ->whereIn('status', ['accepted', 'rejected'])
             ->latest()
             ->get();
-            
+
         return view('admin.bookings.history', compact('bookings'));
     }
 
@@ -42,42 +42,6 @@ class AdminBookingController extends Controller
             'status' => 'accepted'
         ]);
 
-        $booking->load(['bus.driver']);
-
-        // Notify User
-        if ($booking->user) {
-            $msg = "Congratulations! Your booking #{$booking->id} for {$booking->destination} has been ACCEPTED. Thank you for choosing Mwigito Excel.";
-            if ($booking->user->phone_number) {
-                app(\App\Services\CelcomSmsService::class)->send($booking->user->phone_number, $msg);
-            }
-            if ($booking->user->email) {
-                try {
-                    \Illuminate\Support\Facades\Mail::raw($msg, function ($mail) use ($booking) {
-                        $mail->to($booking->user->email)->subject('Mwigito Excel: Booking Accepted');
-                    });
-                } catch (\Exception $e) {
-                    Log::error("Failed to send booking accepted email to {$booking->user->email}: " . $e->getMessage());
-                }
-            }
-        }
-
-        // Notify Driver
-        if ($booking->bus && $booking->bus->driver) {
-            $driverMsg = "New scheduled trip! You have been assigned a trip to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ". Check your dashboard for details.";
-            if ($booking->bus->driver->phone_number) {
-                app(\App\Services\CelcomSmsService::class)->send($booking->bus->driver->phone_number, $driverMsg);
-            }
-            if ($booking->bus->driver->email) {
-                try {
-                    \Illuminate\Support\Facades\Mail::raw($driverMsg, function ($mail) use ($booking) {
-                        $mail->to($booking->bus->driver->email)->subject('Mwigito Excel: New Trip Assignment');
-                    });
-                } catch (\Exception $e) {
-                    Log::error("Failed to send assignment email to driver {$booking->bus->driver->email}: " . $e->getMessage());
-                }
-            }
-        }
-        
         // Redirect to receipt generation with pre-filled data
         return redirect()->route('admin.receipts.create', ['booking_id' => $booking->id])
             ->with('success', 'Booking accepted. Review and generate the receipt below.');
@@ -103,23 +67,47 @@ class AdminBookingController extends Controller
             'status' => 'countered'
         ]);
 
-        // Notify User
-        if ($booking->user) {
-            $msg = "Review Needed: Mwigito Excel has sent a counter-offer for Booking #{$booking->id}. New price: KES " . number_format($request->counter_price, 0) . ". Check your history to accept.";
-            if ($booking->user->phone_number) {
-                app(\App\Services\CelcomSmsService::class)->send($booking->user->phone_number, $msg);
-            }
-            if ($booking->user->email) {
-                try {
-                    \Illuminate\Support\Facades\Mail::raw($msg, function ($mail) use ($booking) {
-                        $mail->to($booking->user->email)->subject('Mwigito Excel: Booking Counter-Offer');
-                    });
-                } catch (\Exception $e) {
-                    Log::error("Failed to send counter-offer email to {$booking->user->email}: " . $e->getMessage());
-                }
-            }
+        return redirect()->route('admin.bookings.show', $booking->id)->with('success', 'Counter-offer has been sent to the user.');
+    }
+
+    public function confirmPayment(Booking $booking)
+    {
+        if ($booking->status !== 'accepted') {
+            return back()->with('Jerror', 'Only accepted bookings can be payment-confirmed.');
         }
 
-        return redirect()->route('admin.bookings.show', $booking->id)->with('success', 'Counter-offer has been sent to the user.');
+        $booking->update([
+            'payment_status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        if (!\App\Models\Receipt::where('booking_id', $booking->id)->exists()) {
+            \App\Models\Receipt::create([
+                'receipt_no' => 'MW-' . strtoupper(\Illuminate\Support\Str::random(8)),
+                'customer_name' => $booking->user->name,
+                'customer_phone' => $booking->payer_phone ?: ($booking->user->phone_number ?? 'N/A'),
+                'bus_number' => optional($booking->bus)->plate_number ?: 'N/A',
+                'trip_route' => $booking->pickup_location . ' to ' . $booking->destination,
+                'amount' => $booking->counter_price ?: $booking->offered_price ?: $booking->amount,
+                'payment_method' => $booking->payment_method ?: 'Manual',
+                'receipt_date' => now()->toDateString(),
+                'booking_id' => $booking->id,
+            ]);
+        }
+
+        return back()->with('success', 'Payment confirmed and receipt generated.');
+    }
+
+    public function rejectPayment(Booking $booking)
+    {
+        if ($booking->status !== 'accepted') {
+            return back()->with('error', 'Only accepted bookings can have payment updates.');
+        }
+
+        $booking->update([
+            'payment_status' => 'failed',
+        ]);
+
+        return back()->with('success', 'Payment request rejected. User will need to retry payment.');
     }
 }

@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'force.password.change' => \App\Http\Middleware\ForcePasswordChange::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'payments/mpesa/callback',
+        ]);
     })
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('app:send-expiry-reminders')->dailyAt('08:00');

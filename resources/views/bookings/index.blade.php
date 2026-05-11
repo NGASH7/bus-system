@@ -122,15 +122,69 @@
                                     <div class="action-footer bg-success">
                                         <div class="action-icon-large text-green"><i class="fas fa-check-shield"></i></div>
                                         <div class="action-content">
-                                            <p class="action-title text-green">Reservation Confirmed</p>
                                             <p class="action-note text-green-dark">Your trip is locked in the master schedule.
                                                 You have secured the vehicle for this journey.</p>
+
+                                            @php
+                                                $hasReceipt = \App\Models\Receipt::where('booking_id', $booking->id)->exists();
+                                            @endphp
+
+                                            @if($booking->payment_status !== 'paid')
+                                                <div class="pay-now-card mt-4">
+                                                    <div class="pay-now-title"><i class="fas fa-wallet"></i> Pay Now</div>
+                                                    <p class="pay-now-subtitle">
+                                                        Complete payment to secure finance clearance. Amount due:
+                                                        <strong>KES
+                                                            {{ number_format($booking->counter_price ?: $booking->offered_price ?: $booking->amount, 0) }}</strong>
+                                                    </p>
+                                                    <form method="POST" action="{{ route('bookings.pay', $booking->id) }}">
+                                                        @csrf
+                                                        <div class="pay-grid">
+                                                            <select name="payment_method" class="pay-input payment-method-select"
+                                                                data-booking="{{ $booking->id }}" required>
+                                                                <option value="">Select mode of payment</option>
+                                                                <option value="Mpesa">M-Pesa (STK Push)</option>
+                                                                <option value="Cheque">Cheque</option>
+                                                                <option value="Bank">Bank Transfer</option>
+                                                                <option value="Cash">Cash</option>
+                                                            </select>
+
+                                                            <div class="mpesa-phone-wrap" id="mpesa-phone-wrap-{{ $booking->id }}"
+                                                                style="display:none;">
+                                                                <input type="text" name="payer_phone" class="pay-input"
+                                                                    placeholder="Mpesa Number e.g 07XXXXXXXX">
+                                                            </div>
+                                                        </div>
+                                                        <button type="submit" class="btn-ticket btn-dark mt-3 w-100">
+                                                            <i class="fas fa-credit-card"></i> Submit Payment
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @else
+                                                <div class="payment-status-paid mt-4">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Payment
+                                                    completed{{ $booking->payment_method ? ' via ' . $booking->payment_method : '' }}.
+                                                    @if($booking->payment_reference)
+                                                        Ref: {{ $booking->payment_reference }}.
+                                                    @endif
+                                                </div>
+                                            @endif
+
+                                            @if($hasReceipt)
+                                                <div class="mt-4">
+                                                    <a href="{{ route('receipts.view', $booking->id) }}" class="btn-view-receipt">
+                                                        <i class="fas fa-file-invoice mr-2"></i> View Official Receipt
+                                                    </a>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                     @if($booking->bus && $booking->bus->driver)
                                         <div class="driver-contact-pill">
                                             <div class="driver-avatar-sm">
-                                                {{ strtoupper(substr($booking->bus->driver->name, 0, 1)) }}</div>
+                                                {{ strtoupper(substr($booking->bus->driver->name, 0, 1)) }}
+                                            </div>
                                             <div class="driver-info">
                                                 <span class="driver-lbl">Your Driver</span>
                                                 <strong class="driver-name">{{ $booking->bus->driver->name }}</strong>
@@ -801,6 +855,26 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
+        .btn-view-receipt {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: #15803d;
+            color: white;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);
+        }
+
+        .btn-view-receipt:hover {
+            background: #166534;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(21, 128, 61, 0.3);
+        }
+
         .btn-maroon {
             background: var(--maroon);
             color: white;
@@ -811,6 +885,57 @@
             background: var(--maroon-dark);
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(128, 0, 0, 0.2);
+        }
+
+        .pay-now-card {
+            background: #ffffff;
+            border: 1px solid #dbeafe;
+            border-radius: 14px;
+            padding: 14px;
+        }
+
+        .pay-now-title {
+            font-size: 13px;
+            font-weight: 900;
+            color: #1e3a8a;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .pay-now-subtitle {
+            font-size: 12px;
+            color: #334155;
+            margin: 0 0 10px;
+            line-height: 1.4;
+        }
+
+        .pay-grid {
+            display: grid;
+            gap: 8px;
+        }
+
+        .pay-input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .pay-input:focus {
+            border-color: #2563eb;
+        }
+
+        .payment-status-paid {
+            background: #ecfdf5;
+            border: 1px solid #86efac;
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: #166534;
+            font-size: 12px;
+            font-weight: 700;
         }
 
         .empty-state-premium {
@@ -830,11 +955,11 @@
             background: #f9fafb;
             border-radius: 50%;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: #d1d5db;
-            margin-bottom: 30px;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        color: #d1d5db;
+        margin-bottom: 30px;
         }
 
         .empty-state-premium h3 {
@@ -870,4 +995,14 @@
             }
         }
     </style>
+    <script>
+        document.querySelectorAll('.payment-method-select').forEach(function (select) {
+            select.addEventListener('change', function () {
+                const bookingId = select.dataset.booking;
+                const phoneWrap = document.getElementById('mpesa-phone-wrap-' + bookingId);
+                if (!phoneWrap) return;
+                phoneWrap.style.display = select.value === 'Mpesa' ? 'block' : 'none';
+            });
+        });
+    </script>
 </x-user-layout>

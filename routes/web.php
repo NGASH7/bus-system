@@ -8,11 +8,11 @@ use App\Http\Controllers\AdminBookingController;
 use App\Http\Controllers\AdminScheduleController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('index');
-});
+Route::get('/', [LandingPageController::class, 'index'])->name('landing');
 
 Route::get('/dashboard', function () {
     $bookingsQuery = \App\Models\Booking::where('user_id', \Illuminate\Support\Facades\Auth::id());
@@ -28,10 +28,15 @@ Route::get('/dashboard', function () {
     return view('dashboard', compact('totalBookingsCount', 'activeTripsCount', 'recentBookings'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::post('/payments/mpesa/callback', [BookingController::class, 'mpesaCallback'])->name('payments.mpesa.callback');
+
 Route::middleware(['auth', 'force.password.change'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
 
     // Password Change Route
     Route::get('/password/change', function () {
@@ -77,6 +82,8 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
         Route::post('bookings/{booking}/accept', [AdminBookingController::class, 'accept'])->name('bookings.accept');
         Route::post('bookings/{booking}/reject', [AdminBookingController::class, 'reject'])->name('bookings.reject');
         Route::post('bookings/{booking}/counter', [AdminBookingController::class, 'counter'])->name('bookings.counter');
+        Route::post('bookings/{booking}/payment/confirm', [AdminBookingController::class, 'confirmPayment'])->name('bookings.payment.confirm');
+        Route::post('bookings/{booking}/payment/reject', [AdminBookingController::class, 'rejectPayment'])->name('bookings.payment.reject');
         Route::get('bookings/history', [AdminBookingController::class, 'history'])->name('bookings.history');
         Route::resource('bookings', AdminBookingController::class)->only(['index', 'show']);
 
@@ -100,9 +107,11 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
 
     // Booking Routes (User)
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/schedule', [BookingController::class, 'schedule'])->name('bookings.schedule');
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::post('/bookings/{booking}/accept', [BookingController::class, 'acceptCounter'])->name('bookings.accept-counter');
+    Route::post('/bookings/{booking}/pay', [BookingController::class, 'submitPayment'])->name('bookings.pay');
     Route::get('/receipts', [BookingController::class, 'indexReceipts'])->name('receipts.index');
     Route::get('/receipts/{booking}', [BookingController::class, 'showReceipt'])->name('receipts.view');
 

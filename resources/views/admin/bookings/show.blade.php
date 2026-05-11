@@ -153,6 +153,43 @@
                     @endif
                 </div>
 
+                @if($booking->status === 'accepted')
+                <div class="premium-card p-loose">
+                    <span class="box-label">Payment Verification</span>
+                    @php
+                        $paymentStatus = $booking->payment_status ?? 'pending';
+                    @endphp
+                    <div class="payment-state-row">
+                        <span class="payment-state-label">Current State</span>
+                        <span class="payment-badge payment-{{ strtolower($paymentStatus) }}">{{ str_replace('_', ' ', $paymentStatus) }}</span>
+                    </div>
+                    <div class="payment-meta">
+                        <div><strong>Method:</strong> {{ $booking->payment_method ?? 'Not selected yet' }}</div>
+                        <div><strong>Payer Phone:</strong> {{ $booking->payer_phone ?? 'N/A' }}</div>
+                        <div><strong>Reference:</strong> {{ $booking->payment_reference ?? 'N/A' }}</div>
+                    </div>
+
+                    @if(in_array($paymentStatus, ['pending_confirmation', 'processing', 'failed', 'pending']))
+                        <div class="payment-actions">
+                            <form method="POST" action="{{ route('admin.bookings.payment.confirm', $booking->id) }}">
+                                @csrf
+                                <button type="submit" class="btn-action btn-accept btn-payment">
+                                    <i class="fas fa-check-circle"></i> Confirm Payment
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ route('admin.bookings.payment.reject', $booking->id) }}">
+                                @csrf
+                                <button type="submit" class="btn-action btn-reject btn-payment">
+                                    <i class="fas fa-times-circle"></i> Reject Payment
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <p class="payment-locked-note"><i class="fas fa-lock"></i> Payment already confirmed.</p>
+                    @endif
+                </div>
+                @endif
+
                 <!-- ASSET CARD -->
                 <div class="premium-card p-loose">
                     <span class="box-label">Assigned Asset</span>
@@ -689,6 +726,74 @@
         .btn-outline-block:hover {
             border-color: var(--maroon);
             color: var(--maroon);
+        }
+
+        .payment-state-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .payment-state-label {
+            font-size: 11px;
+            font-weight: 900;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .payment-badge {
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-radius: 999px;
+            padding: 4px 10px;
+        }
+
+        .payment-pending, .payment-pending_confirmation, .payment-processing {
+            background: #fffbeb;
+            color: #b45309;
+        }
+
+        .payment-paid {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .payment-failed, .payment-cancelled {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .payment-meta {
+            font-size: 12px;
+            color: #4b5563;
+            display: grid;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .payment-actions {
+            display: grid;
+            gap: 10px;
+        }
+
+        .btn-payment {
+            padding: 12px;
+            font-size: 13px;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        .payment-locked-note {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 700;
+            color: #15803d;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .fade-up {

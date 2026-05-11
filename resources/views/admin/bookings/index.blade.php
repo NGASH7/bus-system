@@ -6,6 +6,9 @@
                 <p class="admin-page-subtitle">Manage fleet reservations and negotiate offers.</p>
             </div>
             <div class="admin-actions">
+                <a href="{{ route('admin.bookings.history') }}" class="btn-outline-gold mr-3">
+                    <i class="fas fa-history"></i> Booking History
+                </a>
                 <a href="{{ route('admin.schedule.index') }}" class="btn-outline-maroon">
                     <i class="fas fa-calendar-alt"></i> View Master Schedule
                 </a>
@@ -13,10 +16,10 @@
         </div>
 
         @if(session('success'))
-        <div class="alert alert-success">
-            <i class="fas fa-check-circle"></i>
-            <span>{{ session('success') }}</span>
-        </div>
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span>{{ session('success') }}</span>
+            </div>
         @endif
 
         <div class="premium-card">
@@ -34,62 +37,65 @@
                     </thead>
                     <tbody>
                         @forelse($bookings as $booking)
-                        <tr>
-                            <td>
-                                <div class="client-cell">
-                                    <div class="client-avatar">
-                                        {{ strtoupper(substr($booking->user->name, 0, 1)) }}
+                            <tr>
+                                <td>
+                                    <div class="client-cell">
+                                        <div class="client-avatar">
+                                            {{ strtoupper(substr($booking->user->name, 0, 1)) }}
+                                        </div>
+                                        <div class="client-info">
+                                            <div class="client-name">{{ $booking->user->name }}</div>
+                                            <div class="client-email">{{ $booking->user->email }}</div>
+                                        </div>
                                     </div>
-                                    <div class="client-info">
-                                        <div class="client-name">{{ $booking->user->name }}</div>
-                                        <div class="client-email">{{ $booking->user->email }}</div>
+                                </td>
+                                <td>
+                                    <div class="service-badge">
+                                        {{ $booking->service_type ?? 'Standard' }}
                                     </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="service-badge">
-                                    {{ $booking->service_type ?? 'Standard' }}
-                                </div>
-                                <div class="bus-info">
-                                    <i class="fas fa-bus"></i> {{ $booking->bus->plate_number ?? 'No Bus Assigned' }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="route-info">{{ $booking->pickup_location }} → {{ $booking->destination }}</div>
-                                <div class="date-info">
-                                    <i class="far fa-calendar-alt"></i> {{ $booking->date->format('M d, Y') }} @ {{ \Carbon\Carbon::parse($booking->pickup_time)->format('H:i') }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="offer-amount">KES {{ number_format($booking->offered_price, 0) }}</div>
-                                @if($booking->counter_price)
-                                <div class="counter-amount">Counter: KES {{ number_format($booking->counter_price, 0) }}</div>
-                                @endif
-                            </td>
-                            <td>
-                                @php
-                                    $statusClass = 'status-' . strtolower($booking->status);
-                                    if(!in_array($booking->status, ['pending', 'accepted', 'rejected', 'countered'])) {
-                                        $statusClass = 'status-default';
-                                    }
-                                @endphp
-                                <span class="status-badge {{ $statusClass }}">
-                                    {{ $booking->status }}
-                                </span>
-                            </td>
-                            <td style="text-align: center;">
-                                <a href="{{ route('admin.bookings.show', $booking->id) }}" class="btn-manage">
-                                    <i class="fas fa-eye"></i> Manage
-                                </a>
-                            </td>
-                        </tr>
+                                    <div class="bus-info">
+                                        <i class="fas fa-bus"></i> {{ $booking->bus->plate_number ?? 'No Bus Assigned' }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="route-info">{{ $booking->pickup_location }} → {{ $booking->destination }}
+                                    </div>
+                                    <div class="date-info">
+                                        <i class="far fa-calendar-alt"></i> {{ $booking->date->format('M d, Y') }} @
+                                        {{ \Carbon\Carbon::parse($booking->pickup_time)->format('H:i') }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="offer-amount">KES {{ number_format($booking->offered_price, 0) }}</div>
+                                    @if($booking->counter_price)
+                                        <div class="counter-amount">Counter: KES {{ number_format($booking->counter_price, 0) }}
+                                        </div>
+                                    @endif
+                                </td>
+                                <td>
+                                    @php
+                                        $statusClass = 'status-' . strtolower($booking->status);
+                                        if (!in_array($booking->status, ['pending', 'accepted', 'rejected', 'countered'])) {
+                                            $statusClass = 'status-default';
+                                        }
+                                    @endphp
+                                    <span class="status-badge {{ $statusClass }}">
+                                        {{ $booking->status }}
+                                    </span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="{{ route('admin.bookings.show', $booking->id) }}" class="btn-manage">
+                                        <i class="fas fa-eye"></i> Manage
+                                    </a>
+                                </td>
+                            </tr>
                         @empty
-                        <tr>
-                            <td colspan="6" class="empty-state">
-                                <i class="fas fa-calendar-times"></i>
-                                <p>No booking requests found in the system.</p>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <p>No booking requests found in the system.</p>
+                                </td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -138,7 +144,7 @@
             font-size: 14px;
             text-decoration: none;
             transition: all 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
         }
 
         .btn-outline-maroon i {
@@ -150,6 +156,37 @@
             border-color: #d1d5db;
             color: #111827;
             transform: translateY(-1px);
+        }
+
+        .btn-outline-gold {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .btn-outline-gold i {
+            color: var(--gold);
+        }
+
+        .btn-outline-gold:hover {
+            background: #fcf8eb;
+            border-color: var(--gold);
+            color: #111827;
+            transform: translateY(-1px);
+        }
+
+        .mr-3 {
+            margin-right: 12px;
         }
 
         .alert-success {
@@ -167,15 +204,23 @@
         }
 
         @keyframes pulse-success {
-            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-            70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
         }
 
         .premium-card {
             background: white;
             border-radius: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
             border: 1px solid #f3f4f6;
             overflow: hidden;
         }
@@ -259,6 +304,7 @@
             color: #1f2937;
             font-size: 14px;
         }
+
         .bus-info i {
             color: #9ca3af;
             margin-right: 6px;
@@ -277,6 +323,7 @@
             color: #6b7280;
             font-style: italic;
         }
+
         .date-info i {
             margin-right: 4px;
         }
@@ -306,11 +353,30 @@
             display: inline-block;
         }
 
-        .status-pending { background: #fef3c7; color: #b45309; }
-        .status-accepted { background: #dcfce7; color: #15803d; }
-        .status-rejected { background: #fee2e2; color: #b91c1c; }
-        .status-countered { background: #dbeafe; color: #1d4ed8; }
-        .status-default { background: #f3f4f6; color: #374151; }
+        .status-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-accepted {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .status-countered {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-default {
+            background: #f3f4f6;
+            color: #374151;
+        }
 
         .btn-manage {
             display: inline-flex;
@@ -330,7 +396,7 @@
         .btn-manage:hover {
             background: #000;
             transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
         .empty-state {
@@ -357,8 +423,15 @@
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </x-admin-layout>
