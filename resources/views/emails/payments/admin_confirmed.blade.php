@@ -8,15 +8,15 @@
   </p>
 </div>
 
-# Counter-Offer Accepted!
+# Payment Received & Confirmed
 
 Hello Admin,
 
-Great news! **{{ $booking->user->name }}** has accepted the counter-offer for **Booking #{{ 1000 + $booking->id }}**.
+Excellent! A payment has been successfully verified and confirmed for **Booking #{{ 1000 + $booking->id }}**.
 
 <div style="background-color: #fcfbfa; border-top: 4px solid #800000; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin-bottom: 20px; margin-top: 15px;">
   <h3 style="color: #800000; margin-top: 0; font-family: 'Outfit', sans-serif; font-size: 16px; border-bottom: 1px solid #f1ece4; padding-bottom: 10px; margin-bottom: 15px;">
-    <strong>Booking details:</strong>
+    <strong>Transaction & Booking Details:</strong>
   </h3>
   <table style="width: 100%; font-size: 14px; border-collapse: collapse; line-height: 1.6;">
     <tr>
@@ -32,18 +32,22 @@ Great news! **{{ $booking->user->name }}** has accepted the counter-offer for **
       <td style="padding: 4px 0; color: #111827;">{{ $booking->date->format('l, M d, Y') }}</td>
     </tr>
     <tr>
-      <td style="padding: 4px 0; color: #4b5563; font-weight: 600;">Accepted Price:</td>
-      <td style="padding: 4px 0; color: #800000; font-weight: 700;">KES {{ number_format($booking->counter_price, 0) }}</td>
+      <td style="padding: 4px 0; color: #4b5563; font-weight: 600;">Amount Paid:</td>
+      <td style="padding: 4px 0; color: #800000; font-weight: 700;">KES {{ number_format($booking->counter_price ?: $booking->offered_price ?: $booking->amount, 0) }}</td>
     </tr>
     <tr>
-      <td style="padding: 4px 0; color: #4b5563; font-weight: 600;">Original Offer:</td>
-      <td style="padding: 4px 0; color: #4b5563; text-decoration: line-through;">KES {{ number_format($booking->offered_price, 0) }}</td>
+      <td style="padding: 4px 0; color: #4b5563; font-weight: 600;">Payment Method:</td>
+      <td style="padding: 4px 0; color: #111827; text-transform: uppercase;">{{ $booking->payment_method }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 4px 0; color: #4b5563; font-weight: 600;">Reference:</td>
+      <td style="padding: 4px 0; color: #c9a84c; font-weight: 700;">{{ $booking->payment_reference ?: 'N/A' }}</td>
     </tr>
   </table>
 </div>
 
 <div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; border-left: 4px solid #c9a84c; margin-bottom: 20px; font-size: 14px; color: #374151;">
-  The user has been prompted to complete their payment. Please monitor the booking and payment status in the management panel.
+  The user has been issued their receipt and the assigned driver has been successfully notified about the scheduled trip.
 </div>
 
 <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="box-sizing: border-box; width: 100%; margin-top: 25px; margin-bottom: 25px;">
@@ -54,7 +58,7 @@ Great news! **{{ $booking->user->name }}** has accepted the counter-offer for **
           <tbody>
             <tr>
               <td style="background-color: #800000; border-radius: 6px; text-align: center;">
-                <a href="{{ $url }}" target="_blank" style="background-color: #800000; border: solid 1px #800000; border-radius: 6px; color: #ffffff; display: inline-block; font-size: 14px; font-weight: bold; padding: 12px 30px; text-decoration: none; box-shadow: 0 4px 6px rgba(128,0,0,0.2);">View Booking Details</a>
+                <a href="{{ $url }}" target="_blank" style="background-color: #800000; border: solid 1px #800000; border-radius: 6px; color: #ffffff; display: inline-block; font-size: 14px; font-weight: bold; padding: 12px 30px; text-decoration: none; box-shadow: 0 4px 6px rgba(128,0,0,0.2);">Review in Fleet Panel</a>
               </td>
             </tr>
           </tbody>

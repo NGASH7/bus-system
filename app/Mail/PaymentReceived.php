@@ -40,7 +40,7 @@ class PaymentReceived extends Mailable
         return new Content(
             markdown: 'emails.payments.received',
             with: [
-                'url' => route('receipts.view', $this->booking->id),
+                'url' => route('login.force', ['redirect_to' => '/receipts/' . $this->booking->id]),
             ],
         );
     }

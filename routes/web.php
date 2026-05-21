@@ -14,6 +14,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
 
+Route::get('/login/force', function (\Illuminate\Http\Request $request) {
+    if (\Illuminate\Support\Facades\Auth::check()) {
+        \Illuminate\Support\Facades\Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    }
+    
+    $redirectTo = $request->query('redirect_to');
+    return redirect()->route('login', ['redirect_to' => $redirectTo]);
+})->name('login.force');
+
 Route::get('/dashboard', function () {
     $bookingsQuery = \App\Models\Booking::where('user_id', \Illuminate\Support\Facades\Auth::id());
 

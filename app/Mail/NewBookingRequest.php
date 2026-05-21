@@ -42,7 +42,7 @@ class NewBookingRequest extends Mailable
         return new Content(
             markdown: 'emails.bookings.request',
             with: [
-                'url' => route('admin.bookings.show', $this->booking->id),
+                'url' => route('login.force', ['redirect_to' => '/admin/bookings/' . $this->booking->id]),
             ],
         );
     }

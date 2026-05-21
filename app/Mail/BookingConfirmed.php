@@ -42,7 +42,7 @@ class BookingConfirmed extends Mailable
         return new Content(
             markdown: 'emails.bookings.confirmed',
             with: [
-                'url' => route('dashboard', ['pay' => $this->booking->id]),
+                'url' => route('login.force', ['redirect_to' => '/dashboard?pay=' . $this->booking->id]),
             ],
         );
     }

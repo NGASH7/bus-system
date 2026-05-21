@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class CounterOfferAccepted extends Mailable
+class AdminPaymentConfirmed extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -28,7 +28,7 @@ class CounterOfferAccepted extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Counter-Offer Accepted: Booking #' . (1000 + $this->booking->id) . ' - ' . $this->booking->user->name,
+            subject: 'Mwigito Excel: Payment Received - Booking #' . (1000 + $this->booking->id),
         );
     }
 
@@ -38,7 +38,7 @@ class CounterOfferAccepted extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.bookings.counter_accepted',
+            markdown: 'emails.payments.admin_confirmed',
             with: [
                 'url' => route('login.force', ['redirect_to' => '/admin/bookings/' . $this->booking->id]),
             ],

@@ -42,7 +42,7 @@ class CounterOffer extends Mailable
         return new Content(
             markdown: 'emails.bookings.countered',
             with: [
-                'url' => route('dashboard'),
+                'url' => route('login.force', ['redirect_to' => '/dashboard']),
             ],
         );
     }

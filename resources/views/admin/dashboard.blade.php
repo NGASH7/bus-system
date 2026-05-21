@@ -413,5 +413,102 @@
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* ─── MOBILE RESPONSIVENESS ─────────────────────── */
+        @media (max-width: 768px) {
+            .admin-dashboard-wrapper {
+                padding: 0 0 10px 0;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .admin-stat-card {
+                padding: 14px 12px;
+            }
+
+            .sc-number {
+                font-size: 26px !important;
+            }
+
+            .alerts-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .alert-card {
+                padding: 14px 16px;
+                gap: 12px;
+            }
+
+            .alert-header {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .section-header-compact {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .section-title-premium {
+                font-size: 15px;
+            }
+
+            .activity-section {
+                margin-top: 28px;
+            }
+
+            .activity-row {
+                padding: 14px 16px;
+                gap: 12px;
+            }
+
+            .activity-marker {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+                border-radius: 10px;
+                flex-shrink: 0;
+            }
+
+            .activity-top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+            }
+
+            .activity-user {
+                font-size: 13px;
+            }
+
+            .activity-msg {
+                font-size: 13px;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-stat-card {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 16px;
+                text-align: left;
+            }
+
+            .sc-icon-circle {
+                margin-bottom: 0;
+                flex-shrink: 0;
+            }
+        }
     </style>
 </x-admin-layout>

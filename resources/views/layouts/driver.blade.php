@@ -329,11 +329,88 @@
         .content-area::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.12);
         }
+
+        /* ─── MOBILE RESPONSIVENESS ───────────────── */
+        .sidebar-toggle-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--maroon);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .sidebar-toggle-btn:hover {
+            background: rgba(128, 0, 0, 0.05);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-toggle-btn {
+                display: flex;
+            }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                box-shadow: 5px 0 25px rgba(0,0,0,0.15);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+            .driver-header {
+                padding: 0 16px;
+            }
+            .header-title {
+                font-size: 14px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 150px;
+            }
+            .header-actions {
+                gap: 16px;
+            }
+            .content-area {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title {
+                display: none;
+            }
+        }
     </style>
 </head>
 
 <body class="font-sans antialiased text-gray-900">
     <div class="driver-container">
+        <!-- SIDEBAR OVERLAY -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <img src="{{ asset('Images/image.png') }}" alt="Mwigito Excel Bus System" title="Mwigito Excel Bus System">
@@ -383,6 +460,9 @@
 
         <div class="main-wrapper">
             <header class="driver-header">
+                <button id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="Toggle Sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="header-title">Mwigito Excel Bus Management System</div>
                 <div class="header-actions">
                     @include('partials.notification-dropdown')
@@ -434,6 +514,21 @@
                     panel.classList.remove('show');
                 }
             });
+
+            // Mobile sidebar toggle
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            if (sidebarToggle && sidebar && sidebarOverlay) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.add('open');
+                    sidebarOverlay.classList.add('show');
+                });
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('show');
+                });
+            }
         })();
     </script>
 </body>

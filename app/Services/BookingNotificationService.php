@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Booking;
 use App\Models\User;
 use App\Mail\PaymentReceived;
+use App\Mail\DriverTripConfirmed;
+use App\Mail\AdminPaymentConfirmed;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
@@ -69,9 +71,7 @@ class BookingNotificationService
             // Send Email to Driver
             if ($driver->email) {
                 try {
-                    Mail::raw($driverMsg, function ($mail) use ($driver) {
-                        $mail->to($driver->email)->subject('Mwigito Excel: New Trip Assignment');
-                    });
+                    Mail::to($driver->email)->send(new DriverTripConfirmed($booking));
                 } catch (\Exception $e) {
                     Log::error("Email notify driver failed: " . $e->getMessage());
                 }
@@ -81,13 +81,14 @@ class BookingNotificationService
         // 4. Notify all Admins (Booking Paid Alert)
         try {
             $admins = User::where('role', 'admin')->get();
-            $adminMsg = "Payment Confirmed! Booking #{$booking->id} (Route: {$routeStr}) for KES {$amountFormatted} has been paid successfully by {$booking->user->name} via {$booking->payment_method}.";
             
             foreach ($admins as $admin) {
                 if ($admin->email) {
-                    Mail::raw($adminMsg, function ($mail) use ($admin) {
-                        $mail->to($admin->email)->subject('Mwigito Excel: Payment Received');
-                    });
+                    try {
+                        Mail::to($admin->email)->send(new AdminPaymentConfirmed($booking));
+                    } catch (\Exception $e) {
+                        Log::error("Email notify admin {$admin->email} failed: " . $e->getMessage());
+                    }
                 }
             }
         } catch (\Exception $e) {

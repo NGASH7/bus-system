@@ -491,5 +491,124 @@
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* ─── MOBILE RESPONSIVENESS ─────────────────────── */
+        @media (max-width: 768px) {
+            .user-dashboard-wrapper {
+                padding: 0 0 10px 0;
+            }
+
+            .welcome-hero-banner {
+                padding: 30px 22px;
+                margin-bottom: 20px;
+                border-radius: 20px;
+            }
+
+            .hero-title {
+                font-size: 28px;
+                letter-spacing: -0.3px;
+            }
+
+            .hero-subtitle {
+                font-size: 14px;
+                margin-bottom: 24px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-hero-primary,
+            .btn-hero-secondary {
+                width: 100%;
+                justify-content: center;
+                padding: 14px 20px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .stat-glass-card {
+                padding: 18px 14px;
+                gap: 12px;
+            }
+
+            .stat-icon-wrap {
+                width: 46px;
+                height: 46px;
+                font-size: 18px;
+                border-radius: 14px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .content-white-card {
+                border-radius: 20px;
+                margin-top: 16px;
+            }
+
+            .card-header {
+                padding: 18px 20px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .empty-state-wrap {
+                padding: 40px 20px;
+            }
+
+            .profile-mini-card {
+                padding: 24px 20px;
+                border-radius: 20px;
+                margin-top: 16px;
+            }
+
+            .loyalty-premium-card {
+                border-radius: 20px;
+                padding: 24px 20px;
+                margin-top: 16px;
+            }
+
+            /* Booking list items: stack route & status vertically */
+            .recent-bookings-list > div {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-hero-banner {
+                padding: 24px 16px;
+                border-radius: 16px;
+            }
+
+            .hero-title {
+                font-size: 22px;
+            }
+
+            .hero-badge {
+                font-size: 10px;
+                padding: 4px 12px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-glass-card {
+                flex-direction: row;
+            }
+        }
     </style>
 </x-user-layout>
