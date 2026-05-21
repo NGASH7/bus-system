@@ -41,9 +41,9 @@ class BookingController extends Controller
         // Suggest a baseline budget using bus capacity when a bus is selected.
         $suggestedPrice = null;
         if ($selectedBus) {
-            $suggestedPrice = max(3000, ((int) $selectedBus->capacity) * 180);
+            $suggestedPrice = max(10, ((int) $selectedBus->capacity) * 180);
         } elseif (!empty($handoff['preferred_capacity'])) {
-            $suggestedPrice = max(3000, ((int) $handoff['preferred_capacity']) * 180);
+            $suggestedPrice = max(10, ((int) $handoff['preferred_capacity']) * 180);
         }
 
         $buses = Bus::where('is_active', true)->get();
@@ -65,7 +65,7 @@ class BookingController extends Controller
             'pickup_time' => 'required',
             'return_date' => 'nullable|date|after_or_equal:date',
             'return_time' => 'nullable',
-            'offered_price' => 'required|numeric|min:0',
+            'offered_price' => 'required|numeric|min:10',
             'details' => 'nullable|string',
         ]);
 
@@ -84,29 +84,26 @@ class BookingController extends Controller
                 'bus_id' => $booking->bus_id,
             ]
         );
-<<<<<<< HEAD
 
         // Notify Admins
-        $message = "New booking request! {$booking->user->name} has requested a bus to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ". Offered price: KES " . number_format($booking->offered_price, 0) . ". Please review.";
         $admins = \App\Models\User::where('role', 'admin')->get();
         foreach ($admins as $admin) {
             if ($admin->phone_number) {
-                app(\App\Services\CelcomSmsService::class)->send($admin->phone_number, $message);
+                $smsMsg = "New booking request! {$booking->user->name} to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ". Offered: KES " . number_format($booking->offered_price, 0);
+                app(\App\Services\CelcomSmsService::class)->send($admin->phone_number, $smsMsg);
             }
             if ($admin->email) {
                 try {
-                    \Illuminate\Support\Facades\Mail::raw($message, function ($mail) use ($admin) {
-                        $mail->to($admin->email)->subject('Mwigito Excel: New Booking Request');
-                    });
+                    \Illuminate\Support\Facades\Mail::to($admin->email)->send(new \App\Mail\NewBookingRequest($booking));
                 } catch (\Exception $e) {
-                    Log::error("Failed to send booking email to admin {$admin->email}: " . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error("Failed to send booking email to admin {$admin->email}: " . $e->getMessage());
                 }
             }
         }
 
         // Notify Driver
         if ($booking->bus && $booking->bus->driver) {
-            $driverMsg = "New trip assigned: Booking #{$booking->id} to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ".";
+            $driverMsg = "New trip assigned: Booking #{$booking->id} to {$booking->destination} on " . \Carbon\Carbon::parse($booking->date)->format('d M, Y') . ". Check dashboard.";
             if ($booking->bus->driver->phone_number) {
                 app(\App\Services\CelcomSmsService::class)->send($booking->bus->driver->phone_number, $driverMsg);
             }
@@ -116,12 +113,11 @@ class BookingController extends Controller
                         $mail->to($booking->bus->driver->email)->subject('Mwigito Excel: New Trip Assignment');
                     });
                 } catch (\Exception $e) {
-                    Log::error("Failed to send booking assignment email to driver {$booking->bus->driver->email}: " . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error("Failed to send booking assignment email to driver {$booking->bus->driver->email}: " . $e->getMessage());
                 }
             }
         }
-=======
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
+
 
         return redirect()->route('dashboard')->with('success', 'Your booking request has been submitted. The admin will review your offer shortly.');
     }
@@ -157,7 +153,27 @@ class BookingController extends Controller
             'offered_price' => $booking->counter_price // Formalize the new price
         ]);
 
-        return back()->with('success', 'You have accepted the counter-offer. Your booking is now confirmed!');
+        // Optional: Notify via email for record keeping
+        try {
+            \Illuminate\Support\Facades\Mail::to($booking->user->email)->send(new \App\Mail\BookingConfirmed($booking));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send acceptance confirmation email: " . $e->getMessage());
+        }
+
+        // Notify admins that user accepted counter-offer
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            if ($admin->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($admin->email)->send(new \App\Mail\CounterOfferAccepted($booking));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error("Failed to send counter-offer acceptance email to admin {$admin->email}: " . $e->getMessage());
+                }
+            }
+        }
+
+        return redirect()->route('dashboard', ['pay' => $booking->id])
+            ->with('success', 'You have accepted the counter-offer. Please select your payment method below.');
     }
 
     /**
@@ -188,6 +204,18 @@ class BookingController extends Controller
                 'payment_method' => $validated['payment_method'],
                 'payment_status' => 'pending_confirmation',
             ]);
+
+            // Notify admins to coordinate on payment
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                if ($admin->email) {
+                    try {
+                        \Illuminate\Support\Facades\Mail::to($admin->email)->send(new \App\Mail\PaymentMethodChosen($booking));
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::error("Failed to send payment coordination email to admin {$admin->email}: " . $e->getMessage());
+                    }
+                }
+            }
 
             return back()->with('success', 'Payment mode submitted successfully. Awaiting finance confirmation.');
         }
@@ -236,6 +264,18 @@ class BookingController extends Controller
             'mpesa_merchant_request_id' => $response['MerchantRequestID'] ?? null,
         ]);
 
+        // Notify admins to coordinate on payment
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            if ($admin->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($admin->email)->send(new \App\Mail\PaymentMethodChosen($booking));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error("Failed to send payment coordination email to admin {$admin->email}: " . $e->getMessage());
+                }
+            }
+        }
+
         return back()->with('success', 'STK push sent to ' . $phone . '. Complete payment on your phone.');
     }
 
@@ -276,6 +316,13 @@ class BookingController extends Controller
         ]);
 
         $this->createReceiptIfMissing($booking, 'M-Pesa');
+
+        // Send payment confirmation notifications
+        try {
+            app(\App\Services\BookingNotificationService::class)->sendPaymentConfirmedNotifications($booking);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send payment confirmation notifications for booking #{$booking->id}: " . $e->getMessage());
+        }
 
         return response()->json(['ok' => true]);
     }
@@ -369,7 +416,7 @@ class BookingController extends Controller
         return null;
     }
 
-    private function createReceiptIfMissing(Booking $booking, string $method): void
+    public function createReceiptIfMissing(Booking $booking, string $method): void
     {
         if (Receipt::where('booking_id', $booking->id)->exists()) {
             return;

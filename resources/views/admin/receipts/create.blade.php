@@ -52,11 +52,7 @@
                                 <option value="">Choose a Vehicle</option>
                                 @foreach($buses as $bus)
                                     <option value="{{ $bus->plate_number }}" {{ (old('bus_number', $prefill['bus_number'] ?? '') == $bus->plate_number) ? 'selected' : '' }}>
-<<<<<<< HEAD
                                         {{ $bus->plate_number }}
-=======
-                                        {{ $bus->plate_number }} 
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
                                         @if($bus->model) — {{ $bus->model }} @endif
                                     </option>
                                 @endforeach

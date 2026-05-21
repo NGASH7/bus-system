@@ -101,6 +101,8 @@ class DarajaStkService
                     'token' => (string) $response->json('access_token'),
                     'base_url' => $baseUrl,
                 ];
+            } else {
+                \Illuminate\Support\Facades\Log::error("Daraja Auth Failed for $baseUrl: " . $response->body() . " Status: " . $response->status());
             }
         }
 
@@ -125,22 +127,13 @@ class DarajaStkService
 
     private function setting(string $configKey, string $envKey): ?string
     {
-        $value = (string) config('services.mpesa.' . $configKey);
-        if (trim($value) !== '') {
-            return $value;
+        $value = config('services.mpesa.' . $configKey);
+        
+        if (!empty($value)) {
+            return (string) $value;
         }
 
-        $dotEnvPath = base_path('.env');
-        if (!is_file($dotEnvPath)) {
-            return null;
-        }
-
-        $contents = (string) file_get_contents($dotEnvPath);
-        if (!preg_match('/^' . preg_quote($envKey, '/') . '=(.*)$/m', $contents, $matches)) {
-            return null;
-        }
-
-        return trim($matches[1], " \t\n\r\0\x0B\"'");
+        return (string) env($envKey);
     }
 }
 

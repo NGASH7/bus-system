@@ -22,12 +22,7 @@
                 </div>
                 <div class="mini-stat-card">
                     <span class="mini-label">Expiring Soon</span>
-<<<<<<< HEAD
-                    <span
-                        class="mini-value text-gold">{{ $buses->whereIn('insurance_status', ['warning', 'critical'])->count() }}</span>
-=======
                     <span class="mini-value text-gold">{{ $buses->whereIn('insurance_status', ['warning', 'critical'])->count() }}</span>
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
                 </div>
                 <div class="mini-stat-card">
                     <span class="mini-label">Expired</span>
@@ -66,12 +61,7 @@
                                     <td><code class="policy-code">{{ $bus->policy_number ?? 'N/A' }}</code></td>
                                     <td>{{ $bus->underwriter ?? 'N/A' }}</td>
                                     <td>
-<<<<<<< HEAD
-                                        <span
-                                            class="{{ $bus->insurance_status == 'expired' ? 'text-red font-bold' : ($bus->insurance_status == 'critical' ? 'text-orange font-bold' : '') }}">
-=======
                                         <span class="{{ $bus->insurance_status == 'expired' ? 'text-red font-bold' : ($bus->insurance_status == 'critical' ? 'text-orange font-bold' : '') }}">
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
                                             {{ $bus->insurance_expiry ? $bus->insurance_expiry->format('d M, Y') : 'Not Set' }}
                                         </span>
                                     </td>
@@ -81,12 +71,7 @@
                                         </span>
                                     </td>
                                     <td>
-<<<<<<< HEAD
-                                        <a href="{{ route('admin.insurance.edit', $bus->id) }}" class="btn-action edit"
-                                            title="Update Insurance">
-=======
                                         <a href="{{ route('admin.insurance.edit', $bus->id) }}" class="btn-action edit" title="Update Insurance">
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
                                             <i class="fas fa-edit"></i> Update
                                         </a>
                                     </td>
@@ -116,7 +101,6 @@
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
 
-<<<<<<< HEAD
         .insurance-page-wrapper {
             padding: 10px 20px 40px;
         }
@@ -357,61 +341,3 @@
         }
     </style>
 </x-admin-layout>
-=======
-        .insurance-page-wrapper { padding: 10px 20px 40px; }
-        .insurance-container { max-width: 1400px; margin: 0 auto; }
-
-        /* HEADER */
-        .page-header-premium { margin-bottom: 30px; }
-        .header-main { display: flex; align-items: center; gap: 20px; margin-bottom: 10px; }
-        .premium-title { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 900; color: var(--text-dark); text-transform: uppercase; margin: 0; }
-        .header-line { flex: 1; height: 2px; background: linear-gradient(to right, var(--maroon), transparent); opacity: 0.1; }
-        .premium-subtitle { color: var(--text-muted); font-size: 15px; }
-
-        /* MINI STATS */
-        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .mini-stat-card { background: var(--white); padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 5px; }
-        .mini-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .mini-value { font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 900; color: var(--text-dark); }
-        
-        /* TABLE */
-        .premium-card { background: var(--white); border-radius: var(--radius); border: 1px solid #f1f5f9; box-shadow: var(--shadow); overflow: hidden; }
-        .card-header-flex { padding: 25px 30px; border-bottom: 1px solid #f8fafc; }
-        .card-title { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: var(--text-dark); margin: 0; }
-        
-        .modern-table { width: 100%; border-collapse: collapse; }
-        .modern-table th { background: #f8fafc; padding: 15px 30px; text-align: left; font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
-        .modern-table td { padding: 18px 30px; border-bottom: 1px solid #f8fafc; font-size: 14px; color: var(--text-dark); }
-        
-        .plate-cell { display: flex; align-items: center; gap: 12px; }
-        .plate-cell i { color: var(--maroon); font-size: 16px; }
-        
-        .policy-code { background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-family: 'Monaco', monospace; font-size: 12px; color: var(--maroon); }
-        
-        /* STATUS BADGES */
-        .status-badge { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
-        .status-badge.ok { background: #f0fdf4; color: #16a34a; }
-        .status-badge.warning { background: #fffbeb; color: #d97706; }
-        .status-badge.critical { background: #fff7ed; color: #ea580c; }
-        .status-badge.expired { background: #fef2f2; color: #dc2626; }
-        .status-badge.none { background: #f1f5f9; color: #64748b; }
-
-        /* ACTIONS */
-        .btn-action { text-decoration: none; padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-action.edit { background: var(--maroon-light); color: var(--maroon); }
-        .btn-action.edit:hover { background: var(--maroon); color: white; }
-
-        .text-green { color: #16a34a; }
-        .text-gold { color: #d97706; }
-        .text-red { color: #dc2626; }
-        .text-orange { color: #ea580c; }
-        .font-bold { font-weight: 800; }
-
-        .fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .mt-6 { margin-top: 24px; }
-        .mt-8 { margin-top: 32px; }
-    </style>
-</x-admin-layout>
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f

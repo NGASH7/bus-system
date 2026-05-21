@@ -28,7 +28,9 @@ Route::get('/dashboard', function () {
     return view('dashboard', compact('totalBookingsCount', 'activeTripsCount', 'recentBookings'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::post('/payments/mpesa/callback', [BookingController::class, 'mpesaCallback'])->name('payments.mpesa.callback');
+use App\Http\Controllers\MpesaController;
+
+Route::post('/payments/mpesa/callback', [MpesaController::class, 'callback'])->name('payments.mpesa.callback');
 
 Route::middleware(['auth', 'force.password.change'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -123,7 +125,7 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
         Route::get('/driver/license', [DriverController::class, 'license'])->name('driver.license');
         Route::get('/driver/insurance', [DriverController::class, 'insurance'])->name('driver.insurance');
         Route::get('/driver/inspection', [DriverController::class, 'inspection'])->name('driver.inspection');
-        
+
         // Bus Service
         Route::get('/driver/bus-service', [\App\Http\Controllers\BusServiceController::class, 'driverIndex'])->name('driver.bus-service.index');
         Route::post('/driver/bus-service', [\App\Http\Controllers\BusServiceController::class, 'driverStore'])->name('driver.bus-service.store');
@@ -131,3 +133,51 @@ Route::middleware(['auth', 'force.password.change'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+Route::get('/test-email', function () {
+    $booking = \App\Models\Booking::latest()->first();
+    if (!$booking)
+        return "No bookings found.";
+
+    try {
+        \Illuminate\Support\Facades\Mail::to('iankamnganga@gmail.com')->send(new \App\Mail\BookingConfirmed($booking));
+        return "Success! Check your inbox.";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
+Route::get('/test-mpesa-auth', function () {
+    $consumerKey = env('MPESA_CONSUMER_KEY');
+    $consumerSecret = env('MPESA_CONSUMER_SECRET');
+
+    $credentials = base64_encode($consumerKey . ':' . $consumerSecret);
+
+    $ch = curl_init('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Basic ' . $credentials]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    return response()->json(json_decode($response));
+});
+
+Route::get('/test-mpesa-diagnose', function () {
+    $service = app(App\Services\DarajaStkService::class);
+    return response()->json($service->diagnoseAuth());
+});
+
+Route::get('/test-email', function () {
+    $booking = \App\Models\Booking::latest()->first();
+    if (!$booking)
+        return "No bookings found.";
+
+    try {
+        \Illuminate\Support\Facades\Mail::to('iankamnganga@gmail.com')->send(new \App\Mail\BookingConfirmed($booking));
+        return "Success! Check your inbox.";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});

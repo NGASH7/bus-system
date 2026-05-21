@@ -24,7 +24,7 @@
 
         <div class="bookings-grid">
             @forelse($bookings as $booking)
-                <div class="premium-ticket-card {{ 'border-' . strtolower($booking->status) }}">
+                <div class="premium-ticket-card {{ 'border-' . strtolower($booking->status) }}" id="booking-{{ $booking->id }}">
 
                     <!-- Status Bar -->
                     <div class="card-status-bar">
@@ -994,6 +994,27 @@
                 transform: translateY(0);
             }
         }
+
+        .highlight-payment {
+            border: 2px solid #2563eb !important;
+            box-shadow: 0 0 25px rgba(37, 99, 235, 0.2) !important;
+        }
+
+        .pulse-border {
+            animation: pulseBorder 1.5s infinite;
+        }
+
+        @keyframes pulseBorder {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+            }
+        }
     </style>
     <script>
         document.querySelectorAll('.payment-method-select').forEach(function (select) {
@@ -1003,6 +1024,30 @@
                 if (!phoneWrap) return;
                 phoneWrap.style.display = select.value === 'Mpesa' ? 'block' : 'none';
             });
+        });
+
+        // Handle scroll to payment if 'pay' parameter is present
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const payBookingId = urlParams.get('pay');
+            
+            if (payBookingId) {
+                const element = document.getElementById('booking-' + payBookingId);
+                if (element) {
+                    // Scroll to element
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Add a subtle highlight effect
+                    element.classList.add('highlight-payment');
+                    
+                    // Trigger the payment method selection focus if possible
+                    const select = element.querySelector('.payment-method-select');
+                    if (select) {
+                        select.focus();
+                        select.classList.add('pulse-border');
+                    }
+                }
+            }
         });
     </script>
 </x-user-layout>

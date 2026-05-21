@@ -61,8 +61,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-<<<<<<< HEAD
-=======
         // Send Welcome SMS & Email
         $welcomeMessage = "Welcome to Mwigito Excel, {$user->name}! Your account has been successfully created. Book your next trip with us today.";
 
@@ -80,7 +78,6 @@ class RegisteredUserController extends Controller
             }
         }
 
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

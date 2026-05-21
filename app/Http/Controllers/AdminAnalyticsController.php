@@ -45,7 +45,6 @@ class AdminAnalyticsController extends Controller
             ->pluck('total', 'status')
             ->toArray();
 
-<<<<<<< HEAD
         $receiptRevenue = Receipt::whereNull('booking_id')->whereBetween('receipt_date', [$filterStartDate, $filterEndDate])->sum('amount');
         $bookingRevenue = Booking::whereIn('status', ['accepted', 'completed'])
             ->whereBetween('created_at', [$filterStartDate, $filterEndDate])
@@ -53,20 +52,14 @@ class AdminAnalyticsController extends Controller
 
         $revenue = $receiptRevenue + $bookingRevenue;
 
-=======
-        $revenue = Receipt::whereBetween('receipt_date', [$filterStartDate, $filterEndDate])->sum('amount');
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
         $expenses = BusService::where('status', 'paid')
             ->whereBetween('updated_at', [$filterStartDate, $filterEndDate])
             ->sum('cost');
 
         $financials = [
             'revenue' => $revenue,
-<<<<<<< HEAD
             'receipt_revenue' => $receiptRevenue,
             'booking_revenue' => $bookingRevenue,
-=======
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
             'expenses' => $expenses,
             'profit' => $revenue - $expenses,
         ];
@@ -75,20 +68,10 @@ class AdminAnalyticsController extends Controller
         $trendRangeStart = ($fromDate && $toDate) ? $filterStartDate : $overviewStartDate;
         $trendRangeEnd = ($fromDate && $toDate) ? $filterEndDate : Carbon::now();
 
-<<<<<<< HEAD
         $dateFormats = [
             'daily' => ['label' => "DATE_FORMAT(receipt_date, '%d %b')", 'sort' => 'receipt_date', 'label_exp' => "DATE_FORMAT(updated_at, '%d %b')", 'sort_exp' => 'updated_at', 'label_book' => "DATE_FORMAT(date, '%d %b')", 'sort_book' => 'date'],
             'weekly' => ['label' => "DATE_FORMAT(receipt_date, 'Week %u')", 'sort' => "DATE_FORMAT(receipt_date, '%Y-%u')", 'label_exp' => "DATE_FORMAT(updated_at, 'Week %u')", 'sort_exp' => "DATE_FORMAT(updated_at, '%Y-%u')", 'label_book' => "DATE_FORMAT(date, 'Week %u')", 'sort_book' => "DATE_FORMAT(date, '%Y-%u')"],
             'monthly' => ['label' => "DATE_FORMAT(receipt_date, '%M')", 'sort' => "DATE_FORMAT(receipt_date, '%Y-%m')", 'label_exp' => "DATE_FORMAT(updated_at, '%M')", 'sort_exp' => "DATE_FORMAT(updated_at, '%Y-%m')", 'label_book' => "DATE_FORMAT(date, '%M')", 'sort_book' => "DATE_FORMAT(date, '%Y-%m')"],
-=======
-        $revenueQuery = Receipt::whereBetween('receipt_date', [$trendRangeStart, $trendRangeEnd]);
-        $expenseQuery = BusService::where('status', 'paid')->whereBetween('updated_at', [$trendRangeStart, $trendRangeEnd]);
-
-        $dateFormats = [
-            'daily' => ['label' => "DATE_FORMAT(receipt_date, '%d %b')", 'sort' => 'receipt_date', 'label_exp' => "DATE_FORMAT(updated_at, '%d %b')", 'sort_exp' => 'updated_at'],
-            'weekly' => ['label' => "DATE_FORMAT(receipt_date, 'Week %u')", 'sort' => "DATE_FORMAT(receipt_date, '%Y-%u')", 'label_exp' => "DATE_FORMAT(updated_at, 'Week %u')", 'sort_exp' => "DATE_FORMAT(updated_at, '%Y-%u')"],
-            'monthly' => ['label' => "DATE_FORMAT(receipt_date, '%M')", 'sort' => "DATE_FORMAT(receipt_date, '%Y-%m')", 'label_exp' => "DATE_FORMAT(updated_at, '%M')", 'sort_exp' => "DATE_FORMAT(updated_at, '%Y-%m')"],
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
         ];
 
         $fmt = $dateFormats[$filter];
@@ -96,7 +79,6 @@ class AdminAnalyticsController extends Controller
             $fmt = $dateFormats['daily'];
         }
 
-<<<<<<< HEAD
         // 1. Receipt Revenue Trend
         $receiptTrend = Receipt::whereNull('booking_id')
             ->whereBetween('receipt_date', [$trendRangeStart, $trendRangeEnd])
@@ -125,14 +107,6 @@ class AdminAnalyticsController extends Controller
             $revenueTrend[$label] = ($receiptTrend[$label] ?? 0) + ($bookingTrend[$label] ?? 0);
         }
 
-=======
-        $revenueTrend = $revenueQuery->select(DB::raw("sum(amount) as total"), DB::raw($fmt['label'] . " as label"), DB::raw($fmt['sort'] . " as sort_date"))
-            ->groupBy('sort_date', 'label')->orderBy('sort_date', 'asc')->get()->pluck('total', 'label')->toArray();
-
-        $expenseTrend = $expenseQuery->select(DB::raw("sum(cost) as total"), DB::raw($fmt['label_exp'] . " as label"), DB::raw($fmt['sort_exp'] . " as sort_date"))
-            ->groupBy('sort_date', 'label')->orderBy('sort_date', 'asc')->get()->pluck('total', 'label')->toArray();
-
->>>>>>> b11587431c5fbf574d9668a5703dd118325e648f
         $allLabels = array_unique(array_merge(array_keys($revenueTrend), array_keys($expenseTrend)));
 
         $finalTrend = [];

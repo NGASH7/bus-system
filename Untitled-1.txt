@@ -1,0 +1,3 @@
+# 
+
+{"configured":true,"consumer_key_length":48,"consumer_secret_length":64,"shortcode":"174379","callback_url":"https:\/\/commute-profane-dice.ngrok-free.dev\/payments\/mpesa\/callback","results":[{"base_url":"https:\/\/sandbox.safaricom.co.ke","http_status":200,"has_access_token":true,"raw":{"access_token":"YvBRlJ8HvX463OPt8sJMOTYlHtwr","expires_in":"3599"}},{"base_url":"https:\/\/api.safaricom.co.ke","http_status":400,"has_access_token":false,"raw":""}]}

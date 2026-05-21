@@ -22,7 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withSchedule(function (Schedule $schedule) {
-        $schedule->command('app:send-expiry-reminders')->dailyAt('08:00');
+        $schedule->command('app:send-expiry-reminders')->dailyAt('09:00');
+        $schedule->command('app:send-expiry-reminders')->dailyAt('14:00');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
